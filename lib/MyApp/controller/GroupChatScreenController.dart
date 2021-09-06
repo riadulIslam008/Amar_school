@@ -36,7 +36,6 @@ class GroupChatScreenController extends GetxController {
     messageController = TextEditingController();
     channelNameController = TextEditingController();
     personType = homeController.person;
-    print("PErsonTyep: $personType");
     super.onInit();
   }
 
@@ -171,7 +170,10 @@ class GroupChatScreenController extends GetxController {
       await Permission.camera.request();
       await Permission.microphone.request();
       // ignore: await_only_futures
-      await Get.put(CallController(channelName: classStaderd));
+      await Get.put(CallController(
+        channelName: classStaderd,
+        isTeacher: personType == "Teacher" ? true : false,
+      ));
       Get.to(() => GroupCall());
     } else {
       return;

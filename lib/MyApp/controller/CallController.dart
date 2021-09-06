@@ -1,17 +1,22 @@
 import 'package:agora_rtc_engine/rtc_engine.dart';
+import 'package:agora_rtc_engine/rtc_local_view.dart' as RtcLocalView;
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+
 import 'package:amer_school/MyApp/Services/FirebaseApi.dart';
 import 'package:amer_school/MyApp/Services/VideoCallApi.dart';
 import 'package:amer_school/MyApp/Utiles/app_id.dart';
 import 'package:amer_school/MyApp/controller/HomeViewPageController.dart';
 import 'package:amer_school/MyApp/model/MessageModel.dart';
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:agora_rtc_engine/rtc_local_view.dart' as RtcLocalView;
 
 class CallController extends GetxController {
   final String channelName;
+  final bool isTeacher;
 
-  CallController({this.channelName});
+  CallController({
+    @required this.channelName,
+    @required this.isTeacher,
+  });
   final homeController = Get.find<HomeViewController>();
 
   final _infoStrings = <String>[].obs;
@@ -101,7 +106,6 @@ class CallController extends GetxController {
   void onCallEnd() async {
     // await _videoCallApi.updateCutCall(widget.channelName);
     await VideoCallApi().groupCallEnd(channelName: channelName);
-  
   }
 
   /// Helper function to get list of native views

@@ -41,14 +41,11 @@ class TeacherList extends StatelessWidget {
                               teacherDetailsModel.teacherName.toUpperCase()),
                           subtitle: Text(
                               "${teacherDetailsModel.teacherSubject} Teacher"),
-                          leading: Hero(
-                            tag: "goToProfilePage",
-                            child: CircleAvatar(
-                              radius: 30,
-                              backgroundColor: Colors.grey[400],
-                              backgroundImage: CachedNetworkImageProvider(
-                                teacherDetailsModel.teacherProfileLink,
-                              ),
+                          leading: CircleAvatar(
+                            radius: 30,
+                            backgroundColor: Colors.grey[400],
+                            backgroundImage: CachedNetworkImageProvider(
+                              teacherDetailsModel.teacherProfileLink,
                             ),
                           ),
                           trailing: Icon(Icons.arrow_right),

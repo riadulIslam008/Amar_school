@@ -58,7 +58,7 @@ class GroupCallPickerScreen extends StatelessWidget {
                       );
                       // ignore: await_only_futures
                       await Get.put(CallController(
-                          channelName: groupCallModel.channelName));
+                          channelName: groupCallModel.channelName, isTeacher: false));
                       Get.to(() => GroupCall());
                     },
                   ),

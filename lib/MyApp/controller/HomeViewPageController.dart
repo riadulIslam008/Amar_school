@@ -63,7 +63,7 @@ class HomeViewController extends GetxController {
           .then((studentInfo) {
         studentModel = StudentDetailsModel.fromJson(studentInfo.data());
         personProfile.value = studentModel.studentProfileLink;
-        person = "student";
+        person = "Student";
         print("Student Info Done");
       });
     } catch (e) {
