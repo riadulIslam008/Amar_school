@@ -16,6 +16,8 @@ class VideoPlayView extends StatelessWidget {
           },
           child: Icon(Icons.arrow_back),
         ),
+        title: Text("Video Play"),
+        centerTitle: true,
       ),
       body: GetBuilder(
         init: VideoDisplayController(),

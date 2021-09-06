@@ -62,8 +62,11 @@ class HomePageLoadingView extends GetWidget<HomeViewController> {
                   child: Stack(
                     children: [
                       CachedNetworkImage(
-                          imageUrl: videoFileModel.thumbnailImageLink,
-                          fit: BoxFit.fill),
+                        imageUrl: videoFileModel.thumbnailImageLink,
+                        fit: BoxFit.cover,
+                        height: Get.height * 0.30,
+                        width: _width,
+                      ),
                       Container(
                         color: Colors.grey[800].withOpacity(.4),
                         child: Center(
@@ -82,17 +85,15 @@ class HomePageLoadingView extends GetWidget<HomeViewController> {
                 Container(
                   height: 30,
                   child: Text(
-                    videoFileModel.videoTitle.capitalizeFirst,
+                    "Tilte: ${videoFileModel.videoTitle.capitalizeFirst}",
                     style: _style,
                   ),
                 ),
                 SizedBox(height: 10),
                 Container(
                   height: 30,
-                  // width: _width,
-                  // color: _color,
                   child: Text(
-                    videoFileModel.videoDescription.capitalizeFirst,
+                    "Des: ${videoFileModel.videoDescription.capitalizeFirst}",
                     style: _style,
                   ),
                 ),
@@ -104,11 +105,15 @@ class HomePageLoadingView extends GetWidget<HomeViewController> {
     );
   }
 
+//
+// ─── PLAYVIDEO ──────────────────────────────────────────────────────────────────
+//
   void playButton() {
-    // Get.to(() => VideoDisplay(videoUrl: videoFileModel.videoFileLink));
     controller.videoPlay(videoLink: videoFileModel.videoFileLink);
   }
-
+//
+// ─── DOWNLOAD VIDEO ─────────────────────────────────────────────────────────────
+//
   void downloadVideo() {
     controller.downloadFile(
         videoUrl: videoFileModel.videoFileLink,

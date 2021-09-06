@@ -20,9 +20,9 @@ class HomePageView extends StatelessWidget {
   Widget build(BuildContext context) {
     VideoFileModel videoInfos;
     return Scaffold(
-      //*
-      //*
-      //*
+    //
+    // ─── APPBAR ──────────────────────────────────────────────────────
+    //  
       appBar: AppBar(
         // backgroundColor: Colors.black,
         title: Text("Amar School"),
@@ -44,21 +44,24 @@ class HomePageView extends StatelessWidget {
                 Get.to(() =>
                     Profile(uid: controller.userUid, isTeacher: isTeacher));
               },
-              child: CircleAvatar(
-                radius: 20,
-                backgroundColor: Colors.blueGrey.withOpacity(0.5),
-                backgroundImage: controller.personProfile.value.isEmpty
-                    ? null
-                    : NetworkImage(controller.personProfile.value),
+              child: Hero(
+                tag: "goToProfilePage",
+                child: CircleAvatar(
+                  radius: 20,
+                  backgroundColor: Colors.blueGrey.withOpacity(0.5),
+                  backgroundImage: controller.personProfile.value.isEmpty
+                      ? null
+                      : NetworkImage(controller.personProfile.value),
+                ),
               ),
             ),
           ),
           SizedBox(width: 10),
         ],
       ),
-      //*
-      //*
-      //*
+      //
+      // ─── BPDY ────────────────────────────────────────────────────────
+      //
       body: StreamBuilder(
         stream: firestore.collection(COLLECTION_NAME).snapshots(),
         builder: (context, snapShot) {
@@ -83,9 +86,9 @@ class HomePageView extends StatelessWidget {
                 );
         },
       ),
-      //*
-      //*
-      //*
+  //
+  // ─── FLOATING BUTTON ────────────────────────────────────────────────────────────
+  //
       floatingActionButton: isTeacher
           ? FloatingActionButton(
               onPressed: () {

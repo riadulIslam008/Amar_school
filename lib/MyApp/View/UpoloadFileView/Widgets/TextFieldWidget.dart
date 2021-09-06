@@ -22,7 +22,7 @@ class TextFieldWidget extends StatelessWidget {
         ),
         
       ),
-      textInputAction: TextInputAction.go,
+      textInputAction: TextInputAction.next,
     );
   }
 }

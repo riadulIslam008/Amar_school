@@ -3,10 +3,10 @@ import 'dart:io';
 import 'package:agora_rtc_engine/rtc_engine.dart';
 import 'package:amer_school/MyApp/Services/FirebaseApi.dart';
 import 'package:amer_school/MyApp/Services/VideoCallApi.dart';
-import 'package:amer_school/MyApp/Utiles/UniversalString.dart';
 import 'package:amer_school/MyApp/View/ClassLiveBroadcast/BroadcastPage.dart';
 import 'package:amer_school/MyApp/View/GroupCall/GroupCall.dart';
 import 'package:amer_school/MyApp/controller/CallController.dart';
+import 'package:amer_school/MyApp/controller/HomeViewPageController.dart';
 import 'package:amer_school/MyApp/model/MessageModel.dart';
 import 'package:amer_school/MyApp/model/TeacherDetailsModel.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -17,6 +17,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class GroupChatScreenController extends GetxController {
+  final homeController = Get.find<HomeViewController>();
+
   final VideoCallApi videoCallApi = VideoCallApi();
   final FirebaseApi _firebaseApi = FirebaseApi();
   final GetStorage getStorage = GetStorage();
@@ -33,7 +35,8 @@ class GroupChatScreenController extends GetxController {
   void onInit() async {
     messageController = TextEditingController();
     channelNameController = TextEditingController();
-    personType = await getStorage.read(PERSON_TYPE);
+    personType = homeController.person;
+    print("PErsonTyep: $personType");
     super.onInit();
   }
 
@@ -167,17 +170,8 @@ class GroupChatScreenController extends GetxController {
     if (result) {
       await Permission.camera.request();
       await Permission.microphone.request();
-      // Get.to(
-      //   () => CallPage(
-      //     channelName: classStaderd,
-      //     role: ClientRole.Broadcaster,
-      //     personName: teacherModel.teacherName,
-      //     isTeacher: true,
-      //   ),
-      // );
-      print("channelName : $classStaderd");
-     // ignore: await_only_futures
-     await Get.put(CallController(channelName: classStaderd));
+      // ignore: await_only_futures
+      await Get.put(CallController(channelName: classStaderd));
       Get.to(() => GroupCall());
     } else {
       return;

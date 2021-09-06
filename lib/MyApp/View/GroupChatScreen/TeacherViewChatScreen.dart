@@ -1,10 +1,10 @@
 import 'package:amer_school/MyApp/Utiles/UniversalString.dart';
 import 'package:amer_school/MyApp/View/GroupChatScreen/Widget/EndDrawer.dart';
 import 'package:amer_school/MyApp/View/GroupChatScreen/Widget/MessageBoxSection.dart';
+import 'package:amer_school/MyApp/View/GroupChatScreen/Widget/MessageShowDerection.dart';
 import 'package:amer_school/MyApp/controller/GroupChatScreenController.dart';
 import 'package:amer_school/MyApp/model/MessageModel.dart';
 import 'package:amer_school/MyApp/model/TeacherDetailsModel.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -27,9 +27,9 @@ class TeacherViewChatScreen extends GetWidget<GroupChatScreenController> {
         //*
         key: controller.scaffoldKey,
         appBar: appBar(),
-        //*
-        //*
-        //*
+       //
+       // ─── BODY ────────────────────────────────────────────────────────
+       //
         body: Column(
           children: [
             Expanded(
@@ -71,87 +71,9 @@ class TeacherViewChatScreen extends GetWidget<GroupChatScreenController> {
                                 ? Alignment.centerRight
                                 : Alignment.centerLeft;
 
-                            final BorderRadius _borderRadius = sendByMe
+                            final BorderRadius borderRadius = sendByMe
                                 ? BorderRadius.circular(10)
-                                : BorderRadius.circular(10);
-
-                            Row layout = sendByMe
-                                ? Row(
-                                    children: [
-                                      Expanded(child: Container()),
-                                      GestureDetector(
-                                        onTap: () => controller.visiable(index),
-                                        child: messageModel.type == "message"
-                                            ? Container(
-                                                padding: EdgeInsets.all(10),
-                                                margin:
-                                                    EdgeInsets.only(top: 10),
-                                                decoration: BoxDecoration(
-                                                  borderRadius: _borderRadius,
-                                                  color: teacherMessageColor,
-                                                ),
-                                                constraints: BoxConstraints(
-                                                  maxWidth: Get.width / 2,
-                                                ),
-                                                child:
-                                                    Text(messageModel.message))
-                                            : CachedNetworkImage(
-                                                imageUrl:
-                                                    messageModel.imageLink,
-                                                fit: BoxFit.fill),
-                                      ),
-                                      SizedBox(width: 10),
-                                      CircleAvatar(
-                                        radius: 20,
-                                        backgroundColor: Colors.black54,
-                                        backgroundImage: messageModel
-                                                    .personProfilLink !=
-                                                null
-                                            ? NetworkImage(
-                                                messageModel.personProfilLink)
-                                            : AssetImage(
-                                                "assets/personAvatar.jpeg"),
-                                      ),
-                                    ],
-                                  )
-                                : Row(
-                                    children: [
-                                      CircleAvatar(
-                                        radius: 20,
-                                        backgroundColor: Colors.black54,
-                                        backgroundImage: messageModel
-                                                    .personProfilLink !=
-                                                null
-                                            ? NetworkImage(
-                                                messageModel.personProfilLink)
-                                            : AssetImage(
-                                                "assets/personAvatar.jpeg"),
-                                      ),
-                                      SizedBox(width: 10),
-                                      GestureDetector(
-                                        onTap: () => controller.visiable(index),
-                                        child: messageModel.type == "message"
-                                            ? Container(
-                                                padding: EdgeInsets.all(10),
-                                                margin:
-                                                    EdgeInsets.only(top: 10),
-                                                decoration: BoxDecoration(
-                                                  borderRadius: _borderRadius,
-                                                  color: teacherMessageColor,
-                                                ),
-                                                constraints: BoxConstraints(
-                                                  maxWidth: Get.width / 2,
-                                                ),
-                                                child:
-                                                    Text(messageModel.message))
-                                            : CachedNetworkImage(
-                                                imageUrl:
-                                                    messageModel.imageLink,
-                                                fit: BoxFit.fill),
-                                      ),
-                                      Expanded(child: Container())
-                                    ],
-                                  );
+                                : BorderRadius.circular(10);   
                             //*
                             //*
                             //*
@@ -166,7 +88,17 @@ class TeacherViewChatScreen extends GetWidget<GroupChatScreenController> {
                                         .split(" ")[1]
                                         .substring(0, 5)),
                                   ),
-                                  layout,
+                                  // layout,
+                                  MessageShow(
+                                    messageColor: teacherMessageColor,
+                                    borderRadius: borderRadius,
+                                    sendBy: sendByMe,
+                                    messageType: messageModel.type,
+                                    index: index,
+                                    personProfileLink: messageModel.personProfilLink,
+                                    message: messageModel.message,
+                                    imageUrl: messageModel.imageLink,
+                                  ),
                                   Obx(
                                     () => Visibility(
                                       visible: controller.listBool[index],
@@ -211,7 +143,9 @@ class TeacherViewChatScreen extends GetWidget<GroupChatScreenController> {
               personProfileImage: teacherInfo.teacherProfileLink,
               isTeacher: true,
             ),
-            SizedBox(height: Get.height *0.01,),
+            SizedBox(
+              height: Get.height * 0.01,
+            ),
           ],
         ),
         //*

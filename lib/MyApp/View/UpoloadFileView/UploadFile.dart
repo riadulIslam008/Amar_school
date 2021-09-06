@@ -6,7 +6,8 @@ import 'package:amer_school/MyApp/controller/UploadFileController.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class UploadFileView extends GetWidget<UploadFileController> {
+class UploadFileView extends StatelessWidget {
+  final controller = Get.put(UploadFileController());
   final SizedBox _height = SizedBox(height: 20);
   @override
   Widget build(BuildContext context) {
@@ -32,16 +33,14 @@ class UploadFileView extends GetWidget<UploadFileController> {
       body: ListView(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
         children: [
-          
           DropDownItem(),
           _height,
-          Obx(
-            () => TextFieldWidget(
+         TextFieldWidget(
               titleName: "Video Title",
               maxLine: 1,
-              controller: controller.titleController.value,
+              controller: controller.titleController,
             ),
-          ),
+          
           _height,
           Obx(
             () => TextContainerWidget(
@@ -81,18 +80,16 @@ class UploadFileView extends GetWidget<UploadFileController> {
                   )
                 : Container(),
           ),
-          Obx(
-            () => TextFieldWidget(
-              titleName: "Video description",
-              maxLine: 2,
-              controller: controller.discriptionController.value,
-            ),
+          TextFieldWidget(
+            titleName: "Video description",
+            maxLine: 2,
+            controller: controller.discriptionController,
           ),
           _height,
           ElevatedButton(
             onPressed: () {
-               controller.uploadVideosAndImage();
-             // NotificationApi().instantNotification();
+              controller.uploadVideosAndImage();
+              // NotificationApi().instantNotification();
             },
             child: Text("Upload File"),
           ),

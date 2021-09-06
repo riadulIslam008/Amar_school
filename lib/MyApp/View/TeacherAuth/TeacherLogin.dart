@@ -11,17 +11,13 @@ class TeacherLogin extends GetWidget<TeacherViewController> {
     return SafeArea(
       child: Scaffold(
         body: SingleChildScrollView(
-          child: Padding(
+          child: Container(
+            height: _height,
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Image.asset("assets/teacherScreen.png",
-                    height: _height * 0.40,
-                    width: double.infinity,
-                    fit: BoxFit.cover),
-                SizedBox(height: 20),
                 TextFieldWidget(
                   titleName: "Full Name",
                   maxLine: 1,

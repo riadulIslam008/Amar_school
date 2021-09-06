@@ -13,8 +13,8 @@ class UploadFileController extends GetxController {
   final homeController = Get.find<HomeViewController>();
   FirebaseApi _firebaseApi = FirebaseApi();
 
-  var titleController = TextEditingController().obs;
-  var discriptionController = TextEditingController().obs;
+  var titleController = TextEditingController();
+  var discriptionController = TextEditingController();
 
   RxString imageFileName = "Thumbnail image".obs;
   RxString videoFileName = "select video from file".obs;
@@ -136,8 +136,8 @@ class UploadFileController extends GetxController {
   }
 
   clearState() {
-    titleController.value.text = "";
-    discriptionController.value.text = "";
+    titleController.clear();
+    discriptionController.clear();
     imageFileName.value = "Thumbnail image";
     videoFileName.value = "select video from file";
     urlList.clear();

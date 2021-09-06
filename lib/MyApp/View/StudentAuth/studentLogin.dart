@@ -20,19 +20,12 @@ class StudentLogin extends GetWidget<StudentViewController> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SingleChildScrollView(
-        child: Padding(
+        child: Container(
+          height: Get.height,
           padding: const EdgeInsets.symmetric(horizontal: 15),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              SizedBox(height: 20),
-              Image.asset(
-                "assets/studentScreen.png",
-                height: Get.height * 0.30,
-                width: double.infinity,
-                fit: BoxFit.fill,
-              ),
-              SizedBox(height: 20),
               TextFieldWidget(
                 titleName: "Full Name",
                 maxLine: 1,
@@ -48,7 +41,12 @@ class StudentLogin extends GetWidget<StudentViewController> {
                       controller: controller.rollController,
                     ),
                   ),
-                  SizedBox(width: 20),
+                  SizedBox(width: 20),               
+                  //
+                  // ────────────────────────────────────────────────────────────────────── III ──────────
+                  //   :::::: D R O P D O W N   B U T T O N : :  :   :    :     :        :          :
+                  // ────────────────────────────────────────────────────────────────────────────────
+                  //    
                   Obx(
                     () => Expanded(
                       child: DropdownButton(
@@ -98,7 +96,6 @@ class StudentLogin extends GetWidget<StudentViewController> {
                   ),
                 ],
               ),
-              //SizedBox(height: 50),
             ],
           ),
         ),

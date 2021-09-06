@@ -63,7 +63,7 @@ class HomeViewController extends GetxController {
           .then((studentInfo) {
         studentModel = StudentDetailsModel.fromJson(studentInfo.data());
         personProfile.value = studentModel.studentProfileLink;
-        // print(studentModel.studentName);
+        person = "student";
         print("Student Info Done");
       });
     } catch (e) {
@@ -83,7 +83,7 @@ class HomeViewController extends GetxController {
         teacherInfo = TeacherDetailsModel.fromJson(snapshot.data());
         personProfile.value = teacherInfo.teacherProfileLink;
       });
-      getStorage.write(PERSON_TYPE, "teacher");
+      person = "Teacher";
     } catch (e) {
       print(e);
     }

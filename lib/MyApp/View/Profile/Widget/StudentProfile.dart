@@ -56,16 +56,19 @@ class StudentProfileView extends StatelessWidget {
                     ),
                   ),
                 ),
-                Container(
-                  alignment: Alignment.bottomCenter,
-                  child: CircleAvatar(
-                    radius: 50,
-                    backgroundColor: Colors.white,
-                    child: Center(
-                      child: CircleAvatar(
-                        radius: 46,
-                        backgroundColor: Colors.blueGrey.withOpacity(0.5),
-                        backgroundImage: NetworkImage(studentDetailsModel.studentProfileLink)
+                Hero(
+                  tag: "goToProfilePage",
+                  child: Container(
+                    alignment: Alignment.bottomCenter,
+                    child: CircleAvatar(
+                      radius: 50,
+                      backgroundColor: Colors.white,
+                      child: Center(
+                        child: CircleAvatar(
+                          radius: 46,
+                          backgroundColor: Colors.blueGrey.withOpacity(0.5),
+                          backgroundImage: NetworkImage(studentDetailsModel.studentProfileLink)
+                        ),
                       ),
                     ),
                   ),

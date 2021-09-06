@@ -1,6 +1,7 @@
 import 'package:amer_school/MyApp/Utiles/UniversalString.dart';
 import 'package:amer_school/MyApp/View/Profile/Profile.dart';
 import 'package:amer_school/MyApp/model/TeacherDetailsModel.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -40,17 +41,22 @@ class TeacherList extends StatelessWidget {
                               teacherDetailsModel.teacherName.toUpperCase()),
                           subtitle: Text(
                               "${teacherDetailsModel.teacherSubject} Teacher"),
-                          leading: CircleAvatar(
-                            radius: 30,
-                            backgroundColor: Colors.grey[400],
-                            backgroundImage: NetworkImage(
-                                teacherDetailsModel.teacherProfileLink),
+                          leading: Hero(
+                            tag: "goToProfilePage",
+                            child: CircleAvatar(
+                              radius: 30,
+                              backgroundColor: Colors.grey[400],
+                              backgroundImage: CachedNetworkImageProvider(
+                                teacherDetailsModel.teacherProfileLink,
+                              ),
+                            ),
                           ),
                           trailing: Icon(Icons.arrow_right),
                           onTap: () {
                             Get.to(() => Profile(
                                 uid: snapshots.data.docs[index]
-                                    .data()["teacherUid"], teacherList: true));
+                                    .data()["teacherUid"],
+                                teacherList: true));
                           },
                         ),
                       );

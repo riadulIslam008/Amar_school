@@ -2,7 +2,9 @@ import 'package:amer_school/MyApp/View/AuthView/AuthPage.dart';
 import 'package:amer_school/MyApp/View/Profile/Widget/CardWidget.dart';
 import 'package:amer_school/MyApp/controller/GroupChatScreenController.dart';
 import 'package:amer_school/MyApp/controller/HomeViewPageController.dart';
+import 'package:amer_school/MyApp/controller/UploadFileController.dart';
 import 'package:amer_school/MyApp/model/TeacherDetailsModel.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -58,17 +60,20 @@ class TeacherProfileView extends StatelessWidget {
                     ),
                   ),
                 ),
-                Container(
-                  alignment: Alignment.bottomCenter,
-                  child: CircleAvatar(
-                    radius: 50,
-                    backgroundColor: Colors.white,
-                    child: Center(
-                      child: CircleAvatar(
-                        radius: 46,
-                        backgroundColor: Colors.blueGrey,
-                        backgroundImage: NetworkImage(
-                            teacherDetailsModel.teacherProfileLink),
+                Hero(
+                  tag: "goToProfilePage",
+                  child: Container(
+                    alignment: Alignment.bottomCenter,
+                    child: CircleAvatar(
+                      radius: 50,
+                      backgroundColor: Colors.white,
+                      child: Center(
+                        child: CircleAvatar(
+                          radius: 46,
+                          backgroundColor: Colors.blueGrey,
+                          backgroundImage: CachedNetworkImageProvider(
+                              teacherDetailsModel.teacherProfileLink),
+                        ),
                       ),
                     ),
                   ),
@@ -120,7 +125,7 @@ class TeacherProfileView extends StatelessWidget {
     await firebaseAuth.signOut();
     Get.delete<HomeViewController>(force: true);
     Get.delete<GroupChatScreenController>(force: true);
-    //Get.delete<CallController>(force: true);
+    Get.delete<UploadFileController>(force: true);
     Get.offAll(() => AuthPage());
   }
 
