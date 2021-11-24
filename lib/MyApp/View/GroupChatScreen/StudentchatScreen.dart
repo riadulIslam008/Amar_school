@@ -99,7 +99,8 @@ class StudentChatScreen extends GetWidget<GroupChatScreenController> {
                                       sendBy: sendByMe,
                                       messageType: messageModel.type,
                                       index: index,
-                                      personProfileLink: messageModel.personProfilLink,
+                                      personProfileLink:
+                                          messageModel.personProfilLink,
                                       message: messageModel.message,
                                       imageUrl: messageModel.imageLink,
                                     ),
@@ -211,8 +212,8 @@ class StudentChatScreen extends GetWidget<GroupChatScreenController> {
       textConfirm: "Confrim",
       onConfirm: () async {
         if (controller.channelNameController.text != null) {
-          await controller.handleCameraAndMic(Permission.camera);
-          await controller.handleCameraAndMic(Permission.microphone);
+          await Permission.camera.request();
+          await Permission.microphone.request();
 
           await VideoCallApi().addMembersInStream(
             studentDetailsModel: studentDetailsModel,

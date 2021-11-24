@@ -16,11 +16,8 @@ class TextFieldWidget extends StatelessWidget {
       maxLines: maxLine,
       decoration: InputDecoration(
         hintText: titleName,
-       // labelText: titleName,
-        border: OutlineInputBorder(
-         // gapPadding: 0,
-        ),
         
+        border: OutlineInputBorder(),
       ),
       textInputAction: TextInputAction.next,
     );

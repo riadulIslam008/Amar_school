@@ -1,7 +1,11 @@
+import 'package:amer_school/MyApp/Services/FirebaseApi.dart';
 import 'package:amer_school/MyApp/Services/VideoCallApi.dart';
 import 'package:amer_school/MyApp/Utiles/UniversalString.dart';
 import 'package:amer_school/MyApp/Utiles/app_id.dart';
+import 'package:amer_school/App/presentation/Home_Section/HomeViewPageController.dart';
+import 'package:amer_school/MyApp/model/MessageModel.dart';
 import 'package:amer_school/MyApp/model/StudentDetailsModel.dart';
+import 'package:amer_school/MyApp/model/TeacherDetailsModel.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:agora_rtc_engine/rtc_engine.dart';
@@ -12,14 +16,19 @@ import 'package:get/get.dart';
 class BroadcastPage extends StatefulWidget {
   final String channelName;
   final ClientRole role;
+  final String standerd;
 
-  BroadcastPage({Key key, this.channelName, this.role}) : super(key: key);
+  BroadcastPage({Key key, this.channelName, this.role, this.standerd})
+      : super(key: key);
 
   @override
   _BroadcastPageState createState() => _BroadcastPageState();
 }
 
 class _BroadcastPageState extends State<BroadcastPage> {
+  final homeController = Get.find<HomeViewController>();
+  final FirebaseApi firebaseApi = FirebaseApi();
+
   final _users = [];
   RtcEngine _engine;
   bool muted = false;
@@ -28,8 +37,21 @@ class _BroadcastPageState extends State<BroadcastPage> {
   final FirebaseFirestore firebaseGroupCall = FirebaseFirestore.instance;
   final VideoCallApi _videoCallApi = VideoCallApi();
   StudentDetailsModel studentDetailsModel;
+  TeacherDetailsModel teacherDetailsModel;
 
   int studentWatch = 0;
+
+  @override
+  void initState() {
+    if (widget.role == ClientRole.Broadcaster) {
+      teacherDetailsModel = homeController.teacherInfo;
+    }
+    //initial agora sdk
+    initializeAgora();
+    // Create Stream List
+
+    super.initState();
+  }
 
   @override
   void dispose() {
@@ -38,15 +60,6 @@ class _BroadcastPageState extends State<BroadcastPage> {
     //leave channel destroy the engine
     _engine.destroy();
     super.dispose();
-  }
-
-  @override
-  void initState() {
-    //initial agora sdk
-    initializeAgora();
-    // Create Stream List
-
-    super.initState();
   }
 
   Future<void> initializeAgora() async {
@@ -130,42 +143,10 @@ class _BroadcastPageState extends State<BroadcastPage> {
     );
   }
 
-  //Video Layout Wrapper
   Widget _broadcastView() {
     final views = _getRenderViews();
-    switch (views.length) {
-      case 1:
-        return Container(
-            child: Column(
-          children: <Widget>[_videoView(views[0])],
-        ));
-      case 2:
-        return Container(
-            child: Column(
-          children: <Widget>[
-            _expandedVideoRow([views[0]]),
-            _expandedVideoRow([views[1]])
-          ],
-        ));
-      case 3:
-        return Container(
-            child: Column(
-          children: <Widget>[
-            _expandedVideoRow(views.sublist(0, 2)),
-            _expandedVideoRow(views.sublist(2, 3))
-          ],
-        ));
-      case 4:
-        return Container(
-            child: Column(
-          children: <Widget>[
-            _expandedVideoRow(views.sublist(0, 2)),
-            _expandedVideoRow(views.sublist(2, 4))
-          ],
-        ));
-      default:
-    }
-    return Container();
+
+    return _videoView(views[0]);
   }
 
   List<Widget> _getRenderViews() {
@@ -180,16 +161,6 @@ class _BroadcastPageState extends State<BroadcastPage> {
   /// Video view wrapper
   Widget _videoView(view) {
     return Expanded(child: Container(child: view));
-  }
-
-  /// Video view row wrapper
-  Widget _expandedVideoRow(List<Widget> views) {
-    final wrappedViews = views.map<Widget>(_videoView).toList();
-    return Expanded(
-      child: Row(
-        children: wrappedViews,
-      ),
-    );
   }
 
   /// Toolbar layout
@@ -251,12 +222,24 @@ class _BroadcastPageState extends State<BroadcastPage> {
   }
 
   void _onCallEnd(BuildContext context) async {
-    bool result =
-        await _videoCallApi.onCallEnd(channelName: widget.channelName);
-    if (result) {
-      print("Delete complete");
-    } else {
-      print("Not Deleted");
+    if (widget.role == ClientRole.Broadcaster) {
+      bool result =
+          await _videoCallApi.onCallEnd(channelName: widget.channelName);
+      MessageModel messageModel = MessageModel(
+        personProfilLink: teacherDetailsModel.teacherProfileLink,
+        message: "Live was Over",
+        sendBy: teacherDetailsModel.teacherName,
+        date: DateTime.now(),
+        type: "message",
+        sendByStudent: false,
+      );
+      await firebaseApi.addMessageToGroup(
+          messageMap: messageModel, standerd: widget.standerd);
+      if (result) {
+        print("Delete complete");
+      } else {
+        print("Not Deleted");
+      }
     }
     Get.back();
   }
@@ -304,7 +287,7 @@ class _BroadcastPageState extends State<BroadcastPage> {
                   .snapshots(),
               builder: (context, snapshot) {
                 if (!snapshot.hasData)
-                  return Center(child: Text("No one is Watching U"));
+                  return Center(child: Text("Stream Over"));
 
                 return (snapshot.hasData)
                     ? ListView.builder(
@@ -313,7 +296,10 @@ class _BroadcastPageState extends State<BroadcastPage> {
                         itemBuilder: (context, index) {
                           studentDetailsModel = StudentDetailsModel.fromJson(
                               snapshot.data.data()["members"][index]);
-                          studentWatch = snapshot.data.data()["members"].length;
+                          setState(() {
+                            studentWatch =
+                                snapshot.data.data()["members"].length;
+                          });
                           return ListTile(
                             leading: CircleAvatar(
                               radius: 25,

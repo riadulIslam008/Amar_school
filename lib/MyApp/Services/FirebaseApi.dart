@@ -31,16 +31,16 @@ class FirebaseApi {
     }
   }
 
-  uploadBytes(String destination, Uint8List data) async {
-    try {
-      fireStorage = FirebaseStorage.instance.ref("class10").child(destination);
+  // uploadBytes(String destination, Uint8List data) async {
+  //   try {
+  //     fireStorage = FirebaseStorage.instance.ref("class10").child(destination);
 
-      return fireStorage.putData(data);
-    } on FirebaseException catch (e) {
-      print(e);
-      return null;
-    }
-  }
+  //     return fireStorage.putData(data);
+  //   } on FirebaseException catch (e) {
+  //     print(e);
+  //     return null;
+  //   }
+  // }
 
   uploadVideoInfoToDb(VideoFileModel info) async {
     await firestore.collection(COLLECTION_NAME).doc().set(info.toJson());
@@ -149,13 +149,13 @@ class FirebaseApi {
   }
 
 //Todo ====================== Student Data Save function ==================##
-  Future<void> studentDataSave(
-      {@required TeacherDetailsModel studentInfo, @required String uid}) async {
-    await firestore
-        .collection(studentCollection)
-        .doc(uid)
-        .set(studentInfo.toJson());
-  }
+  // Future<void> studentDataSave(
+  //     {@required TeacherDetailsModel studentInfo, @required String uid}) async {
+  //   await firestore
+  //       .collection(studentCollection)
+  //       .doc(uid)
+  //       .set(studentInfo.toJson());
+  // }
 
   //Todo ==================== Class Routen ===============================##
   Future<void> classRouten({RoutenModel routenModel}) async {

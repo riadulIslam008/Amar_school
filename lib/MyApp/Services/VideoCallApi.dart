@@ -42,12 +42,12 @@ class VideoCallApi {
 
  Future<bool> groupCallEnd({@required String channelName}) async {
     try {
-      await firebaseGroupCall
-          .collection(GROUP_CALL)
-          .doc(channelName)
-          .update({"members": FieldValue.delete()}).whenComplete(() {
-        print("Field Deleted");
-      });
+      // await firebaseGroupCall
+      //     .collection(GROUP_CALL)
+      //     .doc(channelName)
+      //     .update({"members": FieldValue.delete()}).whenComplete(() {
+      //   print("Field Deleted");
+      // });
       await firebaseGroupCall.collection(GROUP_CALL).doc(channelName).delete();
       return true;
     } on FirebaseException catch (e) {

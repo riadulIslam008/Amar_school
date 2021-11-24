@@ -6,7 +6,7 @@ import 'package:get/get.dart';
 import 'package:amer_school/MyApp/Services/FirebaseApi.dart';
 import 'package:amer_school/MyApp/Services/VideoCallApi.dart';
 import 'package:amer_school/MyApp/Utiles/app_id.dart';
-import 'package:amer_school/MyApp/controller/HomeViewPageController.dart';
+import 'package:amer_school/App/presentation/Home_Section/HomeViewPageController.dart';
 import 'package:amer_school/MyApp/model/MessageModel.dart';
 
 class CallController extends GetxController {
@@ -110,11 +110,10 @@ class CallController extends GetxController {
 
   /// Helper function to get list of native views
   List<Widget> getRenderViews() {
-    final List<StatefulWidget> list = [];
+    final List<StatefulWidget> view = [];
+    view.add(RtcLocalView.SurfaceView());
 
-    list.add(RtcLocalView.SurfaceView());
-
-    return list;
+    return view;
   }
 
   /// Video view wrapper
@@ -132,7 +131,7 @@ class CallController extends GetxController {
   }
 
   /// Video layout wrapper
-  Widget viewRows() {
+  Widget viewRows(context, boxwidth) {
     final views = getRenderViews();
     switch (views.length) {
       case 1:
@@ -141,40 +140,47 @@ class CallController extends GetxController {
             children: <Widget>[videoView(views[0])],
           ),
         );
-      case 2:
+        case 2:
         return Container(
-            child: Stack(
-          children: <Widget>[
-            expandedVideoRow([views[0]]),
-            Padding(
-              padding: const EdgeInsets.only(top: 50, left: 20),
-              child: SizedBox(
-                height: 160,
-                width: 130,
-                child: expandedVideoRow([views[1]]),
-              ),
-            ),
-          ],
-        ));
-      case 3:
-        return Container(
-            child: Column(
-          children: <Widget>[
-            expandedVideoRow(views.sublist(0, 2)),
-            expandedVideoRow(views.sublist(2, 3)),
-          ],
-        ));
-      case 4:
-        return Container(
-            child: Column(
-          children: <Widget>[
-            expandedVideoRow(views.sublist(0, 2)),
-            expandedVideoRow(views.sublist(2, 4))
-          ],
-        ));
+          child: Column(
+            children: <Widget>[videoView(Expanded(child: views[0])), Expanded(child: videoView(views[1]))],
+          ),
+        );
+      // case 2:
+      //   return Container(
+      //       child: Stack(
+      //     children: <Widget>[
+      //       expandedVideoRow([views[0]]),
+      //       Padding(
+      //         padding: const EdgeInsets.only(top: 50, left: 20),
+      //         child: SizedBox(
+      //           height: 160,
+      //           width: 130,
+      //           child: expandedVideoRow([views[1]]),
+      //         ),
+      //       ),
+      //     ],
+      //   ));
+      // case 3:
+      //   return Container(
+      //       child: Column(
+      //     children: <Widget>[
+      //       expandedVideoRow(views.sublist(0, 2)),
+      //       expandedVideoRow(views.sublist(2, 3)),
+      //     ],
+      //   ));
+      // case 4:
+      //   return Container(
+      //     child: Column(
+      //   children: <Widget>[
+      //     expandedVideoRow(views.sublist(0, 2)),
+      //     expandedVideoRow(views.sublist(2, 4))
+      //   ],
+      // ));
       default:
+        final studentList = views.sublist(1, views.length);
+        return draggableScrollableSheet(context, boxwidth, studentList);
     }
-    return Container();
   }
 
   void onSwitchCamera() {
@@ -197,6 +203,7 @@ class CallController extends GetxController {
     );
     await _firebaseApi.addMessageToGroup(
         messageMap: messageMap, standerd: channelName);
+    Get.back();
   }
 
   @override
@@ -205,5 +212,32 @@ class CallController extends GetxController {
     _engine.leaveChannel();
     _engine.destroy();
     super.onClose();
+  }
+
+  draggableScrollableSheet(context, boxwidth, studentList) {
+    return DraggableScrollableSheet(
+      initialChildSize: 0.3,
+      minChildSize: 0.15,
+      maxChildSize: 0.9,
+      builder: (context, ScrollController scrollController) {
+        return GridView.builder(
+          controller: scrollController,
+          gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+            maxCrossAxisExtent: boxwidth,
+            childAspectRatio: 3 / 4,
+          ),
+          itemCount: studentList.length,
+          itemBuilder: (contex, index) {
+            return Container(
+              width: 200,
+              height: 200,
+              margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+              color: Colors.red,
+              child: videoView(studentList[index]),
+            );
+          },
+        );
+      },
+    );
   }
 }

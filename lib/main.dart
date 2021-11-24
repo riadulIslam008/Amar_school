@@ -1,7 +1,8 @@
+import 'package:amer_school/App/presentation/Auth_Section/AuthPage.dart';
+import 'package:amer_school/App/rotues/App_Pages.dart';
 import 'package:amer_school/MyApp/Utiles/UniversalString.dart';
-import 'package:amer_school/MyApp/View/AuthView/AuthPage.dart';
-import 'package:amer_school/MyApp/View/HomeView/HomePageView.dart';
-import 'package:amer_school/MyApp/controller/Bindings/Bindings.dart';
+import 'package:amer_school/App/presentation/Home_Section/HomePageView.dart';
+import 'package:amer_school/di/Bindings.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -24,14 +25,15 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       initialBinding: Binding(),
       debugShowCheckedModeBanner: false,
+      getPages: AppPages.routes,
       title: 'Amar_School',
       theme: ThemeData.dark(),
       home: AnnotatedRegion<SystemUiOverlayStyle>(
         value: SystemUiOverlayStyle.light,
         child: SafeArea(
-          child: (getStorage.read(teacherUid) != null)
+          child: getStorage.read(teacherUid) != null
               ? HomePageView(isTeacher: true)
-              : (getStorage.read(studentUid) != null)
+              : getStorage.read(studentUid) != null
                   ? HomePageView(isTeacher: false)
                   : AuthPage(),
         ),

@@ -6,7 +6,7 @@ import 'package:amer_school/MyApp/Services/VideoCallApi.dart';
 import 'package:amer_school/MyApp/View/ClassLiveBroadcast/BroadcastPage.dart';
 import 'package:amer_school/MyApp/View/GroupCall/GroupCall.dart';
 import 'package:amer_school/MyApp/controller/CallController.dart';
-import 'package:amer_school/MyApp/controller/HomeViewPageController.dart';
+import 'package:amer_school/App/presentation/Home_Section/HomeViewPageController.dart';
 import 'package:amer_school/MyApp/model/MessageModel.dart';
 import 'package:amer_school/MyApp/model/TeacherDetailsModel.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -136,27 +136,28 @@ class GroupChatScreenController extends GetxController {
     String message = "Sir $personName is On LIVE";
 
     await sendMessage(
-        personName: personName,
-        standerd: studentClass,
-        message: message,
-        personProfileImage: teacherProfile);
+      personName: personName,
+      standerd: studentClass,
+      message: message,
+      personProfileImage: teacherProfile,
+      type: "message",
+    );
     bool result = await videoCallApi
         .createStreamGroup(personName.toLowerCase().replaceAll(" ", ''));
-    await handleCameraAndMic(Permission.camera);
-    await handleCameraAndMic(Permission.microphone);
+    await Permission.camera.request();
+    await Permission.microphone.request();
 
     if (result) {
-      Get.to(BroadcastPage(
-          channelName: personName.toLowerCase().replaceAll(" ", ''),
-          role: ClientRole.Broadcaster));
+      Get.to(
+        BroadcastPage(
+            channelName: personName.toLowerCase().replaceAll(" ", ''),
+            role: ClientRole.Broadcaster,
+            standerd: studentClass),
+      );
     } else {
       Get.snackbar("Stream Error", "Check your Internet",
           backgroundColor: Colors.red);
     }
-  }
-
-  Future<void> handleCameraAndMic(Permission permission) async {
-    await permission.request();
   }
 
   void groupCall(
@@ -172,7 +173,7 @@ class GroupChatScreenController extends GetxController {
       // ignore: await_only_futures
       await Get.put(CallController(
         channelName: classStaderd,
-        isTeacher: personType == "Teacher" ? true : false,
+        isTeacher: personType == true,
       ));
       Get.to(() => GroupCall());
     } else {

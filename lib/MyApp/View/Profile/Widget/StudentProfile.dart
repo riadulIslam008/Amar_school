@@ -1,7 +1,7 @@
-import 'package:amer_school/MyApp/View/AuthView/AuthPage.dart';
+import 'package:amer_school/App/presentation/Auth_Section/AuthPage.dart';
 import 'package:amer_school/MyApp/View/Profile/Widget/CardWidget.dart';
 import 'package:amer_school/MyApp/controller/GroupChatScreenController.dart';
-import 'package:amer_school/MyApp/controller/HomeViewPageController.dart';
+import 'package:amer_school/App/presentation/Home_Section/HomeViewPageController.dart';
 import 'package:amer_school/MyApp/model/StudentDetailsModel.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';

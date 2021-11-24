@@ -1,42 +1,63 @@
-
 // To parse this JSON data, do
 //
 //     final studentDetailsModel = studentDetailsModelFromJson(jsonString);
 
 import 'dart:convert';
 
-StudentDetailsModel studentDetailsModelFromJson(String str) => StudentDetailsModel.fromJson(json.decode(str));
+import 'package:amer_school/App/domain/entites/Student_Model_Entity.dart';
 
-String studentDetailsModelToJson(StudentDetailsModel data) => json.encode(data.toJson());
+StudentDetailsModel studentDetailsModelFromJson(String str) =>
+    StudentDetailsModel.fromJson(json.decode(str));
 
-class StudentDetailsModel {
-    StudentDetailsModel({
-        this.studentName,
-        this.studentRoll,
-        this.studentProfileLink,
-        this.studentUid,
-        this.studentClass,
-    });
+String studentDetailsModelToJson(StudentDetailsModel data) =>
+    json.encode(data.toJson());
 
-    String studentName;
-    String studentRoll;
-    String studentProfileLink;
-    String studentUid;
-    String studentClass;
+class StudentDetailsModel extends StudentModelEntity {
+  StudentDetailsModel({
+    this.studentName,
+    this.studentRoll,
+    this.studentProfileLink,
+    this.studentUid,
+    this.studentClass,
+  }) : super(
+          studentName: studentName,
+          studentRoll: studentRoll,
+          studentProfileLink: studentProfileLink,
+          studentUid: studentUid,
+          studentClass: studentClass,
+        );
 
-    factory StudentDetailsModel.fromJson(Map<String, dynamic> json) => StudentDetailsModel(
+  final String studentName;
+  final String studentRoll;
+  final String studentProfileLink;
+  final String studentUid;
+  final String studentClass;
+
+  factory StudentDetailsModel.fromJsonStudentModelEntity(
+      StudentModelEntity studentModelEntity) {
+    return StudentDetailsModel(
+      studentName: studentModelEntity.studentName,
+      studentRoll: studentModelEntity.studentRoll,
+      studentUid: studentModelEntity.studentUid,
+      studentClass: studentModelEntity.studentClass,
+      studentProfileLink: studentModelEntity.studentProfileLink,
+    );
+  }
+
+  factory StudentDetailsModel.fromJson(Map<String, dynamic> json) =>
+      StudentDetailsModel(
         studentName: json["studentName"],
         studentRoll: json["studentRoll"],
         studentProfileLink: json["studentProfileLink"],
         studentUid: json["studentUid"],
         studentClass: json["studentClass"],
-    );
+      );
 
-    Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() => {
         "studentName": studentName,
         "studentRoll": studentRoll,
         "studentProfileLink": studentProfileLink,
         "studentUid": studentUid,
         "studentClass": studentClass,
-    };
+      };
 }
