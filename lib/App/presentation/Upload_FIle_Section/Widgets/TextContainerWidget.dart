@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 class TextContainerWidget extends StatelessWidget {
   final String fileName;
   final String buttonText;
-  final Function onClick;
+  final VoidCallback onClick;
 
   const TextContainerWidget(
       {Key key, this.onClick, this.buttonText, this.fileName})

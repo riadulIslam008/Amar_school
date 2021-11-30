@@ -1,8 +1,8 @@
 import 'package:amer_school/MyApp/Utiles/UniversalString.dart';
 import 'package:amer_school/MyApp/View/Profile/Widget/StudentProfile.dart';
 import 'package:amer_school/MyApp/View/Profile/Widget/TeacherProfile.dart';
-import 'package:amer_school/MyApp/model/StudentDetailsModel.dart';
-import 'package:amer_school/MyApp/model/TeacherDetailsModel.dart';
+import 'package:amer_school/App/data/models/StudentDetailsModel.dart';
+import 'package:amer_school/App/data/models/TeacherDetailsModel.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 

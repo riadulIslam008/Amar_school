@@ -1,29 +1,47 @@
 import 'dart:isolate';
 import 'dart:ui';
 
+//? ============ AppError =================//
+import 'package:amer_school/App/Core/errors/App_Error.dart';
+import 'package:amer_school/App/Core/useCases/Alert_Message.dart';
+
+//? ============ String ===================//
 import 'package:amer_school/App/Core/utils/Universal_String.dart';
+
+//? ============ Use Cases ===============//
+import 'package:amer_school/App/domain/entites/Student_Model_Entity.dart';
+import 'package:amer_school/App/domain/entites/Teacher_Model_Entity.dart';
+import 'package:amer_school/App/domain/useCases/Fetch_Student_Data.dart';
+import 'package:amer_school/App/domain/useCases/Fetch_Teacher_Data.dart';
+import 'package:amer_school/App/domain/useCases/Flutter_Video_Download.dart';
+import 'package:amer_school/App/domain/useCases/Paramitters/Download_File.dart';
+import 'package:amer_school/App/domain/useCases/Paramitters/User_Id.dart';
+import 'package:flutter_downloader/flutter_downloader.dart';
+
+//? ============ Routes ================//
+import 'package:amer_school/App/rotues/App_Routes.dart';
 import 'package:amer_school/MyApp/Utiles/UniversalString.dart';
 import 'package:amer_school/MyApp/View/GroupChatScreen/GroupcallORchatscreen.dart';
 import 'package:amer_school/MyApp/View/GroupList/GroupListView.dart';
-import 'package:amer_school/MyApp/View/HomeView/VideoPlayPageView/VideoPlayView.dart';
-import 'package:amer_school/MyApp/controller/VideoPageControler.dart';
-import 'package:amer_school/MyApp/model/StudentDetailsModel.dart';
-import 'package:amer_school/MyApp/model/TeacherDetailsModel.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:amer_school/App/data/models/TeacherDetailsModel.dart';
+
+//? ============= Bindings =============//
+import 'package:amer_school/di/Bindings.dart';
+
+//? ============= Packages =============//
+import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 class HomeViewController extends GetxController {
-  final GetStorage getStorage = GetStorage();
-  final FirebaseFirestore firestore = FirebaseFirestore.instance;
+  final _firebaseRepository;
+  final _getStorage;
+  HomeViewController(this._firebaseRepository, this._getStorage);
 
   String userUid;
-  StudentDetailsModel studentModel;
   String person;
+
+  StudentModelEntity studentModel;
   TeacherDetailsModel teacherInfo;
 
   ReceivePort _receivePort = ReceivePort();
@@ -43,51 +61,27 @@ class HomeViewController extends GetxController {
   }
 
   initialFunction() async {
-    person = await getStorage.read(PERSON_TYPE);
+    person = await _getStorage.read(PERSON_TYPES); //student
     stdentORteacherCheck() ? studentInit() : teacherInit();
   }
 
   bool stdentORteacherCheck() {
-    if (person == STUDENT) {
-      return true;
-    }
-    return false;
+    return person == STUDENT ? true : false; 
   }
 
+  //Todo ========= Student View ===============##
   void studentInit() async {
-    try {
-      userUid = await getStorage.read(studentUid);
-      await firestore
-          .collection(studentCollection)
-          .doc(userUid)
-          .get()
-          .then((studentInfo) {
-        studentModel = StudentDetailsModel.fromJson(studentInfo.data());
-        personProfile.value = studentModel.studentProfileLink;
-        person = "Student";
-        print("Student Info Done");
-      });
-    } catch (e) {
-      print("This is teacher Side");
-      print(e);
-    }
-  }
+    userUid = await _getStorage.read(STUDENT_UID);
 
-  void teacherInit() async {
-    userUid = await getStorage.read(teacherUid);
-    try {
-      await firestore
-          .collection(teacherCollection)
-          .doc(userUid)
-          .get()
-          .then((snapshot) {
-        teacherInfo = TeacherDetailsModel.fromJson(snapshot.data());
-        personProfile.value = teacherInfo.teacherProfileLink;
-      });
-      person = "Teacher";
-    } catch (e) {
-      print(e);
-    }
+    FetchStudentData _fetchStudentData = FetchStudentData(_firebaseRepository);
+    final Either<AppError, StudentModelEntity> _data =
+        await _fetchStudentData(UserId(userUid));
+
+    _data.fold((l) => errorDialogBox(description: l.errorMerrsage), (r) {
+      studentModel = r;
+      personProfile.value = studentModel.studentProfileLink;
+      person = "Student";
+    });
   }
 
   messangerIconPressed() {
@@ -96,19 +90,36 @@ class HomeViewController extends GetxController {
     );
   }
 
+//Todo ================= Teacher View ================
+  void teacherInit() async {
+    userUid = await _getStorage.read(teacherUid);
+
+    FetchTeacherData _fetchTeacherData = FetchTeacherData(_firebaseRepository);
+    final Either<AppError, TeacherModelEntity> _data =
+        await _fetchTeacherData(UserId(userUid));
+
+    _data.fold((l) => errorDialogBox(description: l.errorMerrsage), (r) {
+      teacherInfo = r;
+      personProfile.value = r.teacherProfileLink;
+      person = "Teacher";
+    });
+  }
+
   groupListIconPress() {
     Get.to(() => GroupListView(teacherInfo: teacherInfo));
   }
 
 //Todo ==================== Download File ====================##
-
   void downloadFile(
       {@required String videoUrl, @required String fileName}) async {
-    await Permission.storage.request();
-    final baseName = await getExternalStorageDirectory();
-    final id = await FlutterDownloader.enqueue(
-        url: videoUrl, savedDir: baseName.path, fileName: fileName);
-    print(id);
+    FlutterFileDownload _flutterDownloader =
+        FlutterFileDownload(_firebaseRepository);
+
+    final Either<AppError, void> _download =
+        await _flutterDownloader(DownloadFileParam(videoUrl, fileName));
+
+    _download.fold(
+        (l) => errorDialogBox(description: l.errorMerrsage), (r) => null);
   }
 
   static void downloaderCallback(
@@ -118,11 +129,9 @@ class HomeViewController extends GetxController {
   }
 
   //Todo ============== Video Play ====================##
+  void videoPlay({@required String videoLink}) {
+    Binding().videoPageCall(videoLink);
 
-  Future<void> videoPlay({@required String videoLink}) async {
-    // ignore: await_only_futures
-    await Get.put(VideoDisplayController(videoLink: videoLink));
-
-    Get.to(() => VideoPlayView());
+    Get.toNamed(Routes.VIDEO_PLAY_PAGE);
   }
 }

@@ -1,6 +1,6 @@
 import 'package:amer_school/MyApp/Utiles/UniversalString.dart';
 import 'package:amer_school/MyApp/View/Profile/Profile.dart';
-import 'package:amer_school/MyApp/model/TeacherDetailsModel.dart';
+import 'package:amer_school/App/data/models/TeacherDetailsModel.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';

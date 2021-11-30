@@ -1,11 +1,18 @@
 import 'dart:io';
 
+import 'package:amer_school/App/Core/errors/App_Error.dart';
+import 'package:amer_school/App/Core/useCases/Alert_Message.dart';
+import 'package:amer_school/App/Core/useCases/Make_Validate_Email.dart';
+import 'package:amer_school/App/Core/utils/Universal_String.dart';
+import 'package:amer_school/App/domain/useCases/Firebase_Signin.dart';
+import 'package:amer_school/App/domain/useCases/Paramitters/AuthParam.dart';
 import 'package:amer_school/MyApp/Services/FirebaseApi.dart';
 import 'package:amer_school/MyApp/Utiles/UniversalString.dart';
 import 'package:amer_school/App/presentation/Home_Section/HomePageView.dart';
 import 'package:amer_school/App/Core/widgets/CircularPage.dart';
 import 'package:amer_school/App/presentation/Auth_Section/Teacher_Auth_Section/TeacherSignUP.dart';
-import 'package:amer_school/MyApp/model/TeacherDetailsModel.dart';
+import 'package:amer_school/App/data/models/TeacherDetailsModel.dart';
+import 'package:dartz/dartz.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
@@ -19,10 +26,14 @@ class TeacherViewController extends GetxController {
   final FirebaseApi _firebaseApi = FirebaseApi();
   final GetStorage getStorage = GetStorage();
 
+  final _firebaseRepository;
+
   TextEditingController fullNameController,
       mobileController,
       passwordController,
       quotesController;
+
+  TeacherViewController(this._firebaseRepository);
 
   @override
   void onInit() {
@@ -46,21 +57,36 @@ class TeacherViewController extends GetxController {
 
   //* ## ================== sign IN function ================ ##
   signIN() async {
-    Get.off(() => CircularPage(), transition: Transition.zoom);
+    Get.to(() => CircularPage(), transition: Transition.zoom);
     fullName.value = fullNameController.text;
     password.value = passwordController.text;
 
-    final String email =
-        "${fullName.value.replaceAll(RegExp(" "), "").toLowerCase()}@gmail.com";
+    final String _email = makeValidateEmail(fullNameController.text, "");
 
-    final UserCredential result =
-        await _firebaseApi.signIN(email: email, password: password.value);
+    FirebaseSignIn _userSignIn = FirebaseSignIn(_firebaseRepository);
+    final Either<AppError, String> _either =
+        await _userSignIn(AuthParam(_email, passwordController.text));
 
-    if (result != null) {
-      getStorage.write(teacherUid, "${result.user.uid}");
-      getStorage.write(PERSON_TYPE, "teacher");
+    _either.fold((l) {
+      Get.back();
+      errorDialogBox(description: l.errorMerrsage);
+    }, (r) {
+      getStorage.write(teacherUid, "$r");
+      getStorage.write(PERSON_TYPES, "teacher");
       Get.offAll(() => HomePageView(isTeacher: true));
-    }
+    });
+
+    // final String email =
+    //     "${fullName.value.replaceAll(RegExp(" "), "").toLowerCase()}@gmail.com";
+
+    // final UserCredential result =
+    //     await _firebaseApi.signIN(email: email, password: password.value);
+
+    // if (result != null) {
+    //   getStorage.write(teacherUid, "${result.user.uid}");
+    //   getStorage.write(PERSON_TYPES, "teacher");
+    //   Get.offAll(() => HomePageView(isTeacher: true));
+    // }
   }
 
   //* ## ================== signUP function ================ ##

@@ -2,7 +2,7 @@ import 'package:amer_school/MyApp/Services/VideoCallApi.dart';
 import 'package:amer_school/MyApp/View/GroupCall/GroupCall.dart';
 import 'package:amer_school/MyApp/controller/CallController.dart';
 import 'package:amer_school/MyApp/model/GroupCallModel.dart';
-import 'package:amer_school/MyApp/model/StudentDetailsModel.dart';
+import 'package:amer_school/App/data/models/StudentDetailsModel.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';

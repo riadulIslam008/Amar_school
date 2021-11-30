@@ -1,4 +1,4 @@
-import 'package:amer_school/MyApp/View/UpoloadFileView/Widgets/TextFieldWidget.dart';
+import 'package:amer_school/App/presentation/Upload_FIle_Section/Widgets/TextFieldWidget.dart';
 import 'package:amer_school/App/presentation/Auth_Section/Teacher_Auth_Section/TeacherViewController.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';

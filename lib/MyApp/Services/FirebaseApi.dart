@@ -4,7 +4,6 @@ import 'dart:typed_data';
 import 'package:amer_school/MyApp/Utiles/UniversalString.dart';
 import 'package:amer_school/MyApp/model/MessageModel.dart';
 import 'package:amer_school/MyApp/model/RoutenModel.dart';
-import 'package:amer_school/MyApp/model/TeacherDetailsModel.dart';
 import 'package:amer_school/MyApp/model/VideoFileModel.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';

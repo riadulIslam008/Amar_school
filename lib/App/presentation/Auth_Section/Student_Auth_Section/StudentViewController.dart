@@ -36,22 +36,18 @@ import 'package:amer_school/App/Core/widgets/CircularPage.dart';
 
 //? =============== Auth/Student Login Page ==========
 import 'package:amer_school/App/presentation/Auth_Section/Student_Auth_Section/studentLogin.dart';
+import 'package:amer_school/App/domain/entites/Task_SnapShot.dart';
 
 //? ============== Packages ========
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
 import 'package:image_picker/image_picker.dart';
-
-//? ======== Permission ===========
-import 'package:permission_handler/permission_handler.dart';
 
 class StudentViewController extends GetxController {
   final _firebaseServices;
-  StudentViewController(this._firebaseServices);
-
-  final GetStorage getStorage = GetStorage();
+  final _getStorage;
+  StudentViewController(this._firebaseServices, this._getStorage);
 
   var file = "".obs;
   File imageFile;
@@ -71,34 +67,29 @@ class StudentViewController extends GetxController {
     super.onInit();
   }
 
-  RxString fullName = "".obs;
-  RxString rollNumber = "".obs;
-  RxString password = "".obs;
   RxString standerd = "".obs;
   RxString profileImage = "".obs;
 
   signIN() async {
     Get.to(() => CircularPage(), transition: Transition.zoom);
-    fullName.value = fullNameController.text;
-    password.value = passwordController.text;
-    rollNumber.value = rollController.text;
-
-    final String email = makeValidateEmail(fullName.value, rollNumber.value);
+    final String email =
+        makeValidateEmail(fullNameController.text, rollController.text);
 
     FirebaseSignIn firebasesignin = FirebaseSignIn(_firebaseServices);
     final Either<AppError, String> _credentail =
-        await firebasesignin(AuthParam(email, password.value));
+        await firebasesignin(AuthParam(email, passwordController.text));
 
     _credentail.fold((l) {
       Get.back();
       errorDialogBox(description: l.errorMerrsage);
     }, (r) {
-      getStorage.write(STUDENT, "$r");
-      getStorage.write(PERSON_TYPES, STUDENT);
+      _getStorage.write(STUDENT_UID, "$r");
+      _getStorage.write(PERSON_TYPES, STUDENT);
       Get.offAll(() => HomePageView(isTeacher: false));
     });
   }
 
+//Todo ===========  SignUp ======================//
   signUP({@required String standerdSection}) async {
     if (imageFile == null) {
       Get.back();
@@ -106,33 +97,31 @@ class StudentViewController extends GetxController {
     }
 
     Get.off(() => CircularPage(), transition: Transition.zoom);
-    fullName.value = fullNameController.text;
-    rollNumber.value = rollController.text;
-    password.value = passwordController.text;
     standerd.value = standerdSection;
 
-    final String email = makeValidateEmail(fullName.value, rollNumber.value);
+    final String email =
+        makeValidateEmail(passwordController.text, rollController.text);
 
     final String destination =
         "$fristItemClassListVariable/${fullNameController.text}";
 
     FirebaseSignUp _firebaseSignUp = FirebaseSignUp(_firebaseServices);
     final Either<AppError, String> _credential =
-        await _firebaseSignUp(AuthParam(email, password.value));
+        await _firebaseSignUp(AuthParam(email, passwordController.text));
 
     _credential.fold((l) => print(l.errorMerrsage), (userUid) async {
-      UploadImage _uploadImage = UploadImage(_firebaseServices);
-      final Either<AppError, String> imageUrl =
+      UploadFile _uploadImage = UploadFile(_firebaseServices);
+      final Either<AppError, TaskSnap> imageUrl =
           await _uploadImage(UploadParam(destination, imageFile));
 
       imageUrl.fold((l) => errorDialogBox(description: IMAGE_ERROR_MESSAGE),
           (r) async {
         StudentModelEntity studentInfos = StudentModelEntity(
-          studentName: fullName.value,
-          studentRoll: rollNumber.value,
+          studentName: fullNameController.text,
+          studentRoll: rollController.text,
           studentClass: standerd.value,
           studentUid: userUid,
-          studentProfileLink: r,
+          studentProfileLink: await r.taskSnapshot.ref.getDownloadURL(),
         );
 
         PersonDataSave personDataSave = PersonDataSave(_firebaseServices);
@@ -141,10 +130,10 @@ class StudentViewController extends GetxController {
         AddInGroup addInGroup = AddInGroup(_firebaseServices);
         await addInGroup(
           AddMemberParam(
-              name: fullName.value,
-              roll: rollNumber.value,
+              name: fullNameController.text,
+              roll: rollController.text,
               standerd: standerd.value,
-              profilePic: r),
+              profilePic: await r.taskSnapshot.ref.getDownloadURL()),
         );
 
         clearController();
@@ -163,20 +152,12 @@ class StudentViewController extends GetxController {
 
   //Todo ================== Pick Image =====================##
   Future<void> pickImage({@required ImageSource imageSource}) async {
-    final PermissionStatus cameraStatus = await Permission.camera.request();
-    final PermissionStatus galleryStatus = await Permission.storage.request();
+    XFile _response = await ImagePicker().pickImage(source: imageSource);
+    if (_response != null) {
+      file.value = _response.path;
+      imageFile = File(file.value);
 
-    if (cameraStatus.isGranted && galleryStatus.isGranted) {
-      XFile _response = await ImagePicker().pickImage(source: imageSource);
-      if (_response != null) {
-        file.value = _response.path;
-        imageFile = File(file.value);
-        print(imageFile);
-
-        Get.back();
-      } else {
-        return;
-      }
+      Get.back();
     } else {
       return;
     }

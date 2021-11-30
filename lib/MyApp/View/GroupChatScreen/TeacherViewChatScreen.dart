@@ -4,7 +4,7 @@ import 'package:amer_school/MyApp/View/GroupChatScreen/Widget/MessageBoxSection.
 import 'package:amer_school/MyApp/View/GroupChatScreen/Widget/MessageShowDerection.dart';
 import 'package:amer_school/MyApp/controller/GroupChatScreenController.dart';
 import 'package:amer_school/MyApp/model/MessageModel.dart';
-import 'package:amer_school/MyApp/model/TeacherDetailsModel.dart';
+import 'package:amer_school/App/data/models/TeacherDetailsModel.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';

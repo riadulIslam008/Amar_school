@@ -1,7 +1,6 @@
-import 'package:amer_school/App/presentation/Auth_Section/Student_Auth_Section/StudentSignUP.dart';
 import 'package:amer_school/App/presentation/Auth_Section/Student_Auth_Section/Widgets/DropDown_Section.dart';
+import 'package:amer_school/App/presentation/Upload_FIle_Section/Widgets/TextFieldWidget.dart';
 import 'package:amer_school/App/rotues/App_Routes.dart';
-import 'package:amer_school/MyApp/View/UpoloadFileView/Widgets/TextFieldWidget.dart';
 import 'package:amer_school/App/presentation/Auth_Section/Student_Auth_Section/StudentViewController.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';

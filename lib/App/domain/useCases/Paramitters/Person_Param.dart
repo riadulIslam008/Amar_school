@@ -1,5 +1,4 @@
 import 'package:amer_school/App/domain/entites/Student_Model_Entity.dart';
-import 'package:amer_school/App/domain/useCases/UseCases.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 

@@ -2,7 +2,7 @@ import 'package:amer_school/MyApp/Services/VideoCallApi.dart';
 import 'package:amer_school/MyApp/View/GroupCallPickerScreen.dart/GroupPickerScreen.dart';
 import 'package:amer_school/MyApp/View/GroupChatScreen/StudentchatScreen.dart';
 import 'package:amer_school/MyApp/model/GroupCallModel.dart';
-import 'package:amer_school/MyApp/model/StudentDetailsModel.dart';
+import 'package:amer_school/App/data/models/StudentDetailsModel.dart';
 import 'package:flutter/material.dart';
 
 // ignore: must_be_immutable
