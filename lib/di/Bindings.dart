@@ -5,13 +5,13 @@ import 'package:amer_school/App/data/dataSources/remote/Flutter_Downloader.dart'
 import 'package:amer_school/App/data/repositories/Firebase_ServiceImpl.dart';
 import 'package:amer_school/App/domain/repositories/Firebase_Service.dart';
 import 'package:amer_school/App/presentation/Upload_FIle_Section/UploadFileController.dart';
-import 'package:amer_school/MyApp/controller/ClassRoutenController.dart';
-import 'package:amer_school/MyApp/controller/GroupChatScreenController.dart';
-import 'package:amer_school/MyApp/controller/GroupListViewController.dart';
+import 'package:amer_school/App/presentation/ClassRouten/ClassRoutenController.dart';
+import 'package:amer_school/App/presentation/Group_Chat_Screen/GroupChatScreenController.dart';
+import 'package:amer_school/App/presentation/Group_List_Section/GroupListViewController.dart';
 import 'package:amer_school/App/presentation/Home_Section/HomeViewPageController.dart';
 import 'package:amer_school/App/presentation/Auth_Section/Student_Auth_Section/StudentViewController.dart';
 import 'package:amer_school/App/presentation/Auth_Section/Teacher_Auth_Section/TeacherViewController.dart';
-import 'package:amer_school/MyApp/controller/VideoPageControler.dart';
+import 'package:amer_school/App/presentation/Video_Player_Pages/VideoPageControler.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -45,12 +45,13 @@ class Binding extends Bindings {
     Get.lazyPut<StudentViewController>(
         () => StudentViewController(_firebaseServices, _getStorage),
         fenix: true);
-    Get.lazyPut<TeacherViewController>(() => TeacherViewController(_firebaseServices),
+    Get.lazyPut<TeacherViewController>(
+        () => TeacherViewController(_firebaseServices),
         fenix: true);
     Get.lazyPut<HomeViewController>(
         () => HomeViewController(_firebaseServices, _getStorage),
         fenix: true);
-    Get.lazyPut<GroupListViewController>(() => GroupListViewController(),
+    Get.lazyPut<GroupListViewController>(() => GroupListViewController(_firebaseServices),
         fenix: true);
     Get.lazyPut<GroupChatScreenController>(() => GroupChatScreenController(),
         fenix: true);
@@ -60,8 +61,9 @@ class Binding extends Bindings {
         fenix: true);
   }
 
-  videoPageCall(String videoLink) {
-    Get.lazyPut<VideoDisplayController>(
-        () => VideoDisplayController(videoLink: videoLink));
+  void videoPageCall(String videoLink) async {
+   // ignore: await_only_futures
+     await Get.lazyPut<VideoDisplayController>(
+          () => VideoDisplayController(videoLink: videoLink), fenix: true);
   }
 }

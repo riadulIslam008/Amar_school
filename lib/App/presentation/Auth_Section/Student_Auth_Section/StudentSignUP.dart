@@ -1,8 +1,8 @@
 import 'dart:io';
 
 import 'package:amer_school/App/presentation/Auth_Section/Student_Auth_Section/Widgets/DropDown_Section.dart';
+import 'package:amer_school/App/presentation/Group_Chat_Screen/Widget/TextButtonWidget.dart';
 import 'package:amer_school/App/presentation/Upload_FIle_Section/Widgets/TextFieldWidget.dart';
-import 'package:amer_school/MyApp/View/GroupChatScreen/Widget/TextButtonWidget.dart';
 import 'package:amer_school/App/presentation/Auth_Section/Student_Auth_Section/studentLogin.dart';
 import 'package:amer_school/App/presentation/Auth_Section/Student_Auth_Section/StudentViewController.dart';
 import 'package:flutter/material.dart';
@@ -11,19 +11,10 @@ import 'package:image_picker/image_picker.dart';
 
 class StudentSignup extends GetWidget<StudentViewController> {
   final SizedBox emptySpace = SizedBox(height: 15.0);
-  final List<String> classList = <String>[
-    "Select a Class",
-    "Class 6",
-    "Class 7",
-    "Class 8",
-    "Class 9",
-    "Class 10",
-  ];
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-       // resizeToAvoidBottomInset: false,
         body: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 15),
           child: SingleChildScrollView(

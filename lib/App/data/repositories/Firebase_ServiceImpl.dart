@@ -3,8 +3,12 @@ import 'package:amer_school/App/data/dataSources/remote/Firebase_Auth.dart';
 import 'package:amer_school/App/data/dataSources/remote/Firebase_FireStore.dart';
 import 'package:amer_school/App/data/dataSources/remote/Firebase_Storage.dart';
 import 'package:amer_school/App/data/dataSources/remote/Flutter_Downloader.dart';
+import 'package:amer_school/App/data/models/Group_Model.dart';
 import 'package:amer_school/App/data/models/TeacherDetailsModel.dart';
+import 'package:amer_school/App/data/models/VideoFileModel.dart';
+import 'package:amer_school/App/domain/entites/Group_List_Model_Entity.dart';
 import 'package:amer_school/App/domain/entites/Student_Model_Entity.dart';
+import 'package:amer_school/App/domain/entites/Video_File_Entity.dart';
 import 'package:amer_school/App/domain/repositories/Firebase_Service.dart';
 import 'package:amer_school/App/domain/useCases/Paramitters/Add_Member_Param.dart';
 import 'package:amer_school/App/domain/useCases/Paramitters/AuthParam.dart';
@@ -52,9 +56,11 @@ class FirebaseServiceImpl extends FirebaseService {
   }
 
   @override
-  Future<Either<AppError, TaskSnap>> uploadFile({UploadParam uploadParam}) async {
+  Future<Either<AppError, TaskSnap>> uploadFile(
+      {UploadParam uploadParam}) async {
     try {
       final response = await _fireStorage.uploadFile(
+          sectionName: uploadParam.sectionName,
           destination: uploadParam.destination,
           imageFile: uploadParam.imageFile);
       return Right(response);
@@ -123,6 +129,40 @@ class FirebaseServiceImpl extends FirebaseService {
       final response = await _flutterDownload.downloadFile(
           videoUrl: downloadFileParam.videoUrl,
           fileName: downloadFileParam.fileName);
+      return Right(response);
+    } catch (e) {
+      return Left(AppError(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<AppError, void>> saveVideoFileInfos(
+      {VideoFileEntity videoFileEntity}) async {
+    try {
+      final response = await _firebaseDatabaseApi.saveVideoFileInfos(
+          VideoFileModel.fromVideoFileEntity(videoFileEntity));
+
+      return Right(response);
+    } catch (e) {
+      return Left(AppError(e.toString()));
+    }
+  }
+
+  @override
+  Stream<List<VideoFileModel>> videoFile({String collectionName}) =>
+      _firebaseDatabaseApi.videoFileCollection(collectionName: collectionName);
+
+  @override
+  Stream<List<GroupListModel>> fetchGroupList() =>
+      _firebaseDatabaseApi.fetchGroupList();
+
+  @override
+  Future<Either<AppError, void>> createGroup(
+      GroupModelEntity groupModelEntity) async {
+    try {
+      final response = await _firebaseDatabaseApi
+          .createGroup(GroupListModel.fromGroupModelEntity(groupModelEntity));
+
       return Right(response);
     } catch (e) {
       return Left(AppError(e.toString()));

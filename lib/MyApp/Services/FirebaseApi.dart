@@ -1,10 +1,10 @@
 import 'dart:io';
-import 'dart:typed_data';
+// import 'dart:typed_data';
 
 import 'package:amer_school/MyApp/Utiles/UniversalString.dart';
 import 'package:amer_school/MyApp/model/MessageModel.dart';
 import 'package:amer_school/MyApp/model/RoutenModel.dart';
-import 'package:amer_school/MyApp/model/VideoFileModel.dart';
+import 'package:amer_school/App/data/models/VideoFileModel.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -49,7 +49,7 @@ class FirebaseApi {
   createGroupInDB(List user, String groupClassName) async {
     try {
       await firestore.collection("groups").doc(groupClassName).set({
-        "GroupName": groupClassName,
+        "groupName": groupClassName,
         "members": user,
       });
     } on FirebaseException catch (e) {

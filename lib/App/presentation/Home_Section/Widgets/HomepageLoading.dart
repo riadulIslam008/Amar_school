@@ -1,5 +1,5 @@
+import 'package:amer_school/App/domain/entites/Video_File_Entity.dart';
 import 'package:amer_school/App/presentation/Home_Section/HomeViewPageController.dart';
-import 'package:amer_school/MyApp/model/VideoFileModel.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:focused_menu/focused_menu.dart';
@@ -7,7 +7,7 @@ import 'package:focused_menu/modals.dart';
 import 'package:get/get.dart';
 
 class HomePageLoadingView extends GetWidget<HomeViewController> {
-  final VideoFileModel videoFileModel;
+  final VideoFileEntity videoFileModel;
 
   const HomePageLoadingView({Key key, this.videoFileModel}) : super(key: key);
 

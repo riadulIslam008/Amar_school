@@ -3,12 +3,13 @@ import 'dart:io';
 import 'package:amer_school/App/Core/errors/App_Error.dart';
 import 'package:amer_school/App/Core/useCases/Alert_Message.dart';
 import 'package:amer_school/App/Core/useCases/Successful_SnackBar.dart';
+import 'package:amer_school/App/Core/utils/Universal_String.dart';
+import 'package:amer_school/App/domain/entites/Video_File_Entity.dart';
 import 'package:amer_school/App/domain/useCases/Paramitters/Upload_File.dart';
+import 'package:amer_school/App/domain/useCases/Save_Video_Infos.dart';
 import 'package:amer_school/App/domain/useCases/Upload_Image.dart';
-import 'package:amer_school/MyApp/Services/FirebaseApi.dart';
 import 'package:amer_school/App/presentation/Home_Section/HomeViewPageController.dart';
 import 'package:amer_school/App/domain/entites/Task_SnapShot.dart';
-import 'package:amer_school/MyApp/model/VideoFileModel.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -16,7 +17,6 @@ import 'package:get/get.dart';
 class UploadFileController extends GetxController {
   UploadFileController(this._firebaseRepository);
   final homeController = Get.find<HomeViewController>();
-  FirebaseApi _firebaseApi = FirebaseApi();
   final _firebaseRepository;
 
   TextEditingController titleController, discriptionController;
@@ -31,8 +31,8 @@ class UploadFileController extends GetxController {
   RxString imageFileName = "Thumbnail image".obs;
   RxString videoFileName = "select video from file".obs;
 
-  final List urlList = [];
-
+  String imageUrl;
+  String videoUrl;
   File imageFile;
   File videoFile;
 
@@ -49,18 +49,19 @@ class UploadFileController extends GetxController {
         discriptionController.value.text.trim() != null) {
       await uploadImage();
       await uploadVideo();
-      VideoFileModel info = VideoFileModel(
-        videoTitle: titleController.value.text,
-        thumbnailImageLink: urlList[0],
-        videoDescription: discriptionController.value.text,
-        videoFileLink: urlList[1],
-        date: date,
-        teacherProfileImage: homeController.teacherInfo.teacherProfileLink,
-      );
+      VideoFileEntity info = VideoFileEntity(
+          titleController.value.text,
+          imageUrl,
+          videoUrl,
+          discriptionController.value.text,
+          date,
+          fristItemClassSerial,
+          homeController.teacherInfo.teacherProfileLink);
 
-      await _firebaseApi.uploadVideoInfoToDb(info);
+      SaveVideoInfos _saveVideoinfos = SaveVideoInfos(_firebaseRepository);
+      await _saveVideoinfos(info);
       successfulSnackBar("UploadVideo", "SuccessFully complete");
-
+      isUploading.value = false;
       clearState();
     } else {
       Get.snackbar("Waring", "Title and Discription should not empty");
@@ -72,29 +73,28 @@ class UploadFileController extends GetxController {
 
     UploadFile _uploadImage = UploadFile(_firebaseRepository);
     final Either<AppError, TaskSnap> _data =
-        await _uploadImage(UploadParam(destination, imageFile));
+        await _uploadImage(UploadParam(destination, imageFile, IMAGES));
 
     _data.fold((l) => errorDialogBox(description: l.errorMerrsage), (r) async {
       isUploading.value = true;
       imageParcentage.value =
           (r.taskSnapshot.bytesTransferred / r.taskSnapshot.totalBytes) * 100;
-      String url = await r.taskSnapshot.ref.getDownloadURL();
-      urlList.add(url);
+      imageUrl = await r.taskSnapshot.ref.getDownloadURL();
     });
   }
 
   Future<void> uploadVideo() async {
     final destination = "$date/${videoFileName.value}";
 
-    UploadFile _uploadImage = UploadFile(_firebaseRepository);
+    UploadFile _uploadVideo = UploadFile(_firebaseRepository);
     final Either<AppError, TaskSnap> _data =
-        await _uploadImage(UploadParam(destination, videoFile));
+        await _uploadVideo(UploadParam(destination, videoFile, VIDEOS));
 
     _data.fold((l) => errorDialogBox(description: l.errorMerrsage), (r) async {
+      isUploading.value = true;
       videoParcentage.value =
           (r.taskSnapshot.bytesTransferred / r.taskSnapshot.totalBytes) * 100;
-      String url = await r.taskSnapshot.ref.getDownloadURL();
-      urlList.add(url);
+      videoUrl = await r.taskSnapshot.ref.getDownloadURL();
     });
   }
 
@@ -103,9 +103,5 @@ class UploadFileController extends GetxController {
     discriptionController.clear();
     imageFileName.value = "Thumbnail image";
     videoFileName.value = "select video from file";
-    urlList.clear();
   }
-
-  //Todo ================ Working With Notification ===================//
-
 }

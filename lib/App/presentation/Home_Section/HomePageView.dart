@@ -1,9 +1,8 @@
 import 'package:amer_school/App/presentation/Home_Section/Widgets/Floating_Button.dart';
 import 'package:amer_school/App/presentation/Home_Section/Widgets/HomepageLoading.dart';
-import 'package:amer_school/MyApp/Utiles/UniversalString.dart';
-import 'package:amer_school/MyApp/View/Profile/Profile.dart';
+import 'package:amer_school/App/presentation/Profile_Section/Profile.dart';
 import 'package:amer_school/App/presentation/Home_Section/HomeViewPageController.dart';
-import 'package:amer_school/MyApp/model/VideoFileModel.dart';
+import 'package:amer_school/App/rotues/App_Routes.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -16,18 +15,16 @@ class HomePageView extends GetWidget<HomeViewController> {
 
   @override
   Widget build(BuildContext context) {
-    VideoFileModel videoInfos;
     return Scaffold(
-    //
-    // ─── APPBAR ──────────────────────────────────────────────────────
-    //  
+      //
+      //Todo ─── APPBAR ──────────────────────────────────────────────────────
+      //
       appBar: AppBar(
-        // backgroundColor: Colors.black,
         title: Text("Amar School"),
         actions: [
           isTeacher
               ? IconButton(
-                  onPressed: () => controller.groupListIconPress(),
+                  onPressed: () => Get.toNamed(Routes.GROUP_LIST_PAGE),
                   icon: Icon(Icons.people),
                 )
               : IconButton(
@@ -57,35 +54,19 @@ class HomePageView extends GetWidget<HomeViewController> {
         ],
       ),
       //
-      // ─── BODY ────────────────────────────────────────────────────────
+      //Todo ─── BODY ────────────────────────────────────────────────────────
       //
-      body: StreamBuilder(
-        stream: firestore.collection(COLLECTION_NAME).snapshots(),
-        builder: (context, snapShot) {
-          if (!snapShot.hasData) return Container();
-          return (snapShot.hasData)
-              ? Container(
-                  color: Colors.blueAccent.withOpacity(0.2),
-                  child: ListView.builder(
-                      itemCount: snapShot.data.docs.length,
-                      itemBuilder: (_, index) {
-                        videoInfos = VideoFileModel.fromJson(
-                            snapShot.data.docs[index].data());
-                        //*
-                        //*
-                        return HomePageLoadingView(
-                          videoFileModel: videoInfos,
-                        );
-                      }),
-                )
-              : Center(
-                  child: Text("Video Content is Loading..."),
-                );
-        },
+      body: GetBuilder<HomeViewController>(
+        builder: (controller) => ListView.builder(
+          itemCount: controller.videoDocs.length,
+          physics: BouncingScrollPhysics(),
+          itemBuilder: (_, index) =>
+              HomePageLoadingView(videoFileModel: controller.videoDocs[index]),
+        ),
       ),
-  //
-  // ─── FLOATING BUTTON ────────────────────────────────────────────────────────────
-  //
+      //
+      //Todo ─── FLOATING BUTTON ────────────────────────────────────────────────────────────
+      //
       floatingActionButton: FloatingButton(isTeacher: isTeacher),
     );
   }

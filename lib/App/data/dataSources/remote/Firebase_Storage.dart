@@ -6,7 +6,9 @@ import 'package:flutter/cupertino.dart';
 
 abstract class FireStorage {
   Future<TaskSnap> uploadFile(
-      {@required String destination, @required File imageFile});
+      {@required String sectionName,
+      @required String destination,
+      @required File imageFile});
 }
 
 class FireStorageImpl extends FireStorage {
@@ -15,9 +17,12 @@ class FireStorageImpl extends FireStorage {
   FireStorageImpl(this._firebaseStorage);
 
   @override
-  Future<TaskSnap> uploadFile({String destination, File imageFile}) async {
+  Future<TaskSnap> uploadFile(
+      {@required String sectionName,
+      String destination,
+      File imageFile}) async {
     Reference _filedestionation =
-        _firebaseStorage.ref("images").child(destination);
+        _firebaseStorage.ref(sectionName).child(destination);
     TaskSnapshot _fileUpload = await _filedestionation.putFile(imageFile);
 
     return TaskSnap(_fileUpload);

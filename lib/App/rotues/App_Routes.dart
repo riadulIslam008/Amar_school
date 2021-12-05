@@ -1,5 +1,4 @@
 abstract class Routes {
-  static const INital_Routes = "/";
   static const TeacherLogin = "/teacherLogin";
   static const StudentLogin = "/studentLogin";
   static const StudentSignin = "/studentSignin";
@@ -7,7 +6,9 @@ abstract class Routes {
   static const Home = "/home";
   static const UploadFile = "/uploadFile";
   static const CAST_PROFILE = "/profile";
-  static const TeacherList = "/teacherList";
-  static const WATCH_TRAILER = "/chatsection";
+  static const TEACHER_LIST = "/teacherList";
   static const VIDEO_PLAY_PAGE = "/videoPlayPage";
+  static const PROFILE_PAGE = "/profile";
+  static const GROUP_LIST_PAGE = "/groupList";
+  static const TEACHER_CHAT_PAGE = "/teacherChatScreen";
 }

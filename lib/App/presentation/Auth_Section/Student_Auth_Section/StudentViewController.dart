@@ -112,7 +112,7 @@ class StudentViewController extends GetxController {
     _credential.fold((l) => print(l.errorMerrsage), (userUid) async {
       UploadFile _uploadImage = UploadFile(_firebaseServices);
       final Either<AppError, TaskSnap> imageUrl =
-          await _uploadImage(UploadParam(destination, imageFile));
+          await _uploadImage(UploadParam(destination, imageFile, IMAGES));
 
       imageUrl.fold((l) => errorDialogBox(description: IMAGE_ERROR_MESSAGE),
           (r) async {
