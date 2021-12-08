@@ -2,7 +2,7 @@ import 'dart:io';
 // import 'dart:typed_data';
 
 import 'package:amer_school/MyApp/Utiles/UniversalString.dart';
-import 'package:amer_school/MyApp/model/MessageModel.dart';
+import 'package:amer_school/App/data/models/MessageModel.dart';
 import 'package:amer_school/MyApp/model/RoutenModel.dart';
 import 'package:amer_school/App/data/models/VideoFileModel.dart';
 import 'package:firebase_auth/firebase_auth.dart';

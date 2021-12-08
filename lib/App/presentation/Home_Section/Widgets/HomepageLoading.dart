@@ -1,3 +1,4 @@
+import 'package:amer_school/App/Core/asstes/Assest_Image.dart';
 import 'package:amer_school/App/domain/entites/Video_File_Entity.dart';
 import 'package:amer_school/App/presentation/Home_Section/HomeViewPageController.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -49,8 +50,9 @@ class HomePageLoadingView extends GetWidget<HomeViewController> {
               radius: 30,
               backgroundColor: Colors.blueGrey[400],
               backgroundImage: videoFileModel.teacherProfileImage == null
-                  ? AssetImage("assets/personAvatar.jpeg")
-                  : NetworkImage(videoFileModel.teacherProfileImage),
+                  ? AssetImage(PERSON_AVATER)
+                  : CachedNetworkImageProvider(
+                      videoFileModel.teacherProfileImage),
             ),
             SizedBox(width: 10),
             Expanded(

@@ -4,6 +4,8 @@ import 'package:amer_school/App/data/dataSources/remote/Firebase_Storage.dart';
 import 'package:amer_school/App/data/dataSources/remote/Flutter_Downloader.dart';
 import 'package:amer_school/App/data/repositories/Firebase_ServiceImpl.dart';
 import 'package:amer_school/App/domain/repositories/Firebase_Service.dart';
+import 'package:amer_school/App/presentation/Profile_Section/Profile_Controller.dart';
+import 'package:amer_school/App/presentation/Teacher_List/Teacher_list_Controller.dart';
 import 'package:amer_school/App/presentation/Upload_FIle_Section/UploadFileController.dart';
 import 'package:amer_school/App/presentation/ClassRouten/ClassRoutenController.dart';
 import 'package:amer_school/App/presentation/Group_Chat_Screen/GroupChatScreenController.dart';
@@ -51,19 +53,28 @@ class Binding extends Bindings {
     Get.lazyPut<HomeViewController>(
         () => HomeViewController(_firebaseServices, _getStorage),
         fenix: true);
-    Get.lazyPut<GroupListViewController>(() => GroupListViewController(_firebaseServices),
+    Get.lazyPut<GroupListViewController>(
+        () => GroupListViewController(_firebaseServices),
         fenix: true);
-    Get.lazyPut<GroupChatScreenController>(() => GroupChatScreenController(),
+    Get.lazyPut<GroupChatScreenController>(
+        () => GroupChatScreenController(_firebaseServices),
         fenix: true);
     Get.lazyPut<RoutenController>(() => RoutenController(), fenix: true);
     Get.lazyPut<UploadFileController>(
         () => UploadFileController(_firebaseServices),
         fenix: true);
+
+    Get.lazyPut<TeacherListController>(
+        () => TeacherListController(_firebaseServices),
+        fenix: true);
+    Get.lazyPut<ProfileController>(
+        () => ProfileController(_firebaseAuth, _getStorage), fenix: true);
   }
 
   void videoPageCall(String videoLink) async {
-   // ignore: await_only_futures
-     await Get.lazyPut<VideoDisplayController>(
-          () => VideoDisplayController(videoLink: videoLink), fenix: true);
+    // ignore: await_only_futures
+    await Get.lazyPut<VideoDisplayController>(
+        () => VideoDisplayController(videoLink: videoLink),
+        fenix: true);
   }
 }

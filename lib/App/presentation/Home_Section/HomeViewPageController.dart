@@ -8,17 +8,18 @@ import 'package:amer_school/App/Core/useCases/Alert_Message.dart';
 //? ============ String ===================//
 import 'package:amer_school/App/Core/utils/Universal_String.dart';
 
-//? ============ Use Cases ================//
+//? ============ Student Model ================//
 import 'package:amer_school/App/domain/entites/Student_Model_Entity.dart';
+//? ============ Teacher Model ================//
 import 'package:amer_school/App/domain/entites/Teacher_Model_Entity.dart';
+//? ============ Use Cases ================//
 import 'package:amer_school/App/domain/entites/Video_File_Entity.dart';
 import 'package:amer_school/App/domain/useCases/Fetch_Student_Data.dart';
 import 'package:amer_school/App/domain/useCases/Fetch_Teacher_Data.dart';
-import 'package:amer_school/App/domain/useCases/Fetch_Video_File.dart';
 import 'package:amer_school/App/domain/useCases/Flutter_Video_Download.dart';
 import 'package:amer_school/App/domain/useCases/Paramitters/Download_File.dart';
 import 'package:amer_school/App/domain/useCases/Paramitters/User_Id.dart';
-import 'package:amer_school/App/presentation/Group_Chat_Screen/GroupcallORchatscreen.dart';
+import 'package:amer_school/App/domain/useCases/Video_File_Info.dart';
 
 //? ============ Flutter Downloader ==========//
 import 'package:flutter_downloader/flutter_downloader.dart';
@@ -26,7 +27,6 @@ import 'package:flutter_downloader/flutter_downloader.dart';
 //? ============ Routes ================//
 import 'package:amer_school/App/rotues/App_Routes.dart';
 import 'package:amer_school/MyApp/Utiles/UniversalString.dart';
-import 'package:amer_school/App/data/models/TeacherDetailsModel.dart';
 
 //? ============= Bindings =============//
 import 'package:amer_school/di/Bindings.dart';
@@ -46,15 +46,18 @@ class HomeViewController extends GetxController {
   List<VideoFileEntity> videoDocs = [];
 
   StudentModelEntity studentModel;
-  TeacherDetailsModel teacherInfo;
+  TeacherModelEntity teacherInfo;
 
   ReceivePort _receivePort = ReceivePort();
 
   RxString personProfile = "".obs;
 
+  Rxn<List<VideoFileEntity>> _videoFile = Rxn<List<VideoFileEntity>>();
+  List<VideoFileEntity> get videosInfo => _videoFile.value;
+
   @override
   void onInit() {
-    fetchVideoCollection();
+    _videoFile.bindStream(fetchVideoCollection());
     IsolateNameServer.registerPortWithName(
         _receivePort.sendPort, "donwloadingVideo");
     FlutterDownloader.registerCallback(downloaderCallback);
@@ -84,15 +87,13 @@ class HomeViewController extends GetxController {
 
     _data.fold((l) => errorDialogBox(description: l.errorMerrsage), (r) {
       studentModel = r;
-      personProfile.value = studentModel.studentProfileLink;
-      person = "Student";
+      personProfile.value = r.studentProfileLink;
+      person = STUDENT;
     });
   }
 
   messangerIconPressed() {
-    Get.to(
-      () => GroupCallORchatScreen(studentDetailsModel: studentModel),
-    );
+    Get.toNamed(Routes.STUDENT_CHAT, arguments: studentModel.studentClass);
   }
 
 //Todo ================= Teacher View ================
@@ -138,11 +139,8 @@ class HomeViewController extends GetxController {
 
   //Todo ============== Fetch Stream as QuerySnapshots ==========##
 
-  fetchVideoCollection() async {
-    FetchVideoFile _fetchVideoFile = FetchVideoFile(_firebaseRepository);
-
-    final response = _fetchVideoFile(collectionName: VIDEOS);
-    videoDocs = await response.first;
-    update();
+  fetchVideoCollection() {
+    VideoFileInfo _videoFileInfo = VideoFileInfo(_firebaseRepository);
+    return _videoFileInfo();
   }
 }

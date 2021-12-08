@@ -4,7 +4,7 @@ class CardWidget extends StatelessWidget {
   final String text;
   final IconData iconData;
   final IconData trailingIcon;
-  final Function function;
+  final VoidCallback onTap;
   final double textSize;
   final Color color;
 
@@ -13,7 +13,7 @@ class CardWidget extends StatelessWidget {
       @required this.text,
       @required this.iconData,
       this.trailingIcon,
-      this.function,
+      this.onTap,
       this.textSize = 16,
       this.color = Colors.white})
       : super(key: key);
@@ -32,7 +32,7 @@ class CardWidget extends StatelessWidget {
           ),
         ),
         trailing: Icon(trailingIcon, color: Colors.green),
-        onTap: function,
+        onTap: onTap,
       ),
     );
   }

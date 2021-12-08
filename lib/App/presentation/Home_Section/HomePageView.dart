@@ -1,17 +1,15 @@
+import 'package:amer_school/App/Core/utils/Universal_String.dart';
 import 'package:amer_school/App/presentation/Home_Section/Widgets/Floating_Button.dart';
 import 'package:amer_school/App/presentation/Home_Section/Widgets/HomepageLoading.dart';
-import 'package:amer_school/App/presentation/Profile_Section/Profile.dart';
 import 'package:amer_school/App/presentation/Home_Section/HomeViewPageController.dart';
 import 'package:amer_school/App/rotues/App_Routes.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class HomePageView extends GetWidget<HomeViewController> {
   final bool isTeacher;
   HomePageView({Key key, this.isTeacher}) : super(key: key);
-
-  final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -32,20 +30,22 @@ class HomePageView extends GetWidget<HomeViewController> {
                   icon: Icon(Icons.messenger),
                 ),
           SizedBox(width: 10),
-          Obx(
-            () => GestureDetector(
-              onTap: () {
-                Get.to(() =>
-                    Profile(uid: controller.userUid, isTeacher: isTeacher));
-              },
-              child: Hero(
-                tag: "goToProfilePage",
-                child: CircleAvatar(
+          GestureDetector(
+            onTap: () => controller.stdentORteacherCheck()
+                ? Get.toNamed(Routes.STUDENT_PROFILE,
+                    arguments: controller.studentModel)
+                : Get.toNamed(Routes.TEACHER_PROFILE,
+                    arguments: [controller.teacherInfo, false]),
+            child: Hero(
+              tag: PROFILE_TAG,
+              child: Obx(
+                () => CircleAvatar(
                   radius: 20,
                   backgroundColor: Colors.blueGrey.withOpacity(0.5),
                   backgroundImage: controller.personProfile.value.isEmpty
                       ? null
-                      : NetworkImage(controller.personProfile.value),
+                      : CachedNetworkImageProvider(
+                          controller.personProfile.value),
                 ),
               ),
             ),
@@ -56,13 +56,17 @@ class HomePageView extends GetWidget<HomeViewController> {
       //
       //Todo ─── BODY ────────────────────────────────────────────────────────
       //
-      body: GetBuilder<HomeViewController>(
-        builder: (controller) => ListView.builder(
-          itemCount: controller.videoDocs.length,
-          physics: BouncingScrollPhysics(),
-          itemBuilder: (_, index) =>
-              HomePageLoadingView(videoFileModel: controller.videoDocs[index]),
-        ),
+      body: GetX<HomeViewController>(
+        builder: (controller) {
+          return controller.videosInfo != null
+              ? ListView.builder(
+                  itemCount: controller.videosInfo.length,
+                  physics: BouncingScrollPhysics(),
+                  itemBuilder: (_, index) => HomePageLoadingView(
+                      videoFileModel: controller.videosInfo[index]),
+                )
+              : Container();
+        },
       ),
       //
       //Todo ─── FLOATING BUTTON ────────────────────────────────────────────────────────────

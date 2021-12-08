@@ -3,7 +3,7 @@ import 'package:amer_school/MyApp/Services/VideoCallApi.dart';
 import 'package:amer_school/MyApp/Utiles/UniversalString.dart';
 import 'package:amer_school/MyApp/Utiles/app_id.dart';
 import 'package:amer_school/App/presentation/Home_Section/HomeViewPageController.dart';
-import 'package:amer_school/MyApp/model/MessageModel.dart';
+import 'package:amer_school/App/data/models/MessageModel.dart';
 import 'package:amer_school/App/data/models/StudentDetailsModel.dart';
 import 'package:amer_school/App/data/models/TeacherDetailsModel.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';

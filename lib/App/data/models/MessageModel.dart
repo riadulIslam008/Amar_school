@@ -4,12 +4,14 @@
 
 import 'dart:convert';
 
+import 'package:amer_school/App/domain/entites/Message_Model_entity.dart';
+
 MessageModel messageModelFromJson(String str) =>
     MessageModel.fromJson(json.decode(str));
 
 String messageModelToJson(MessageModel data) => json.encode(data.toJson());
 
-class MessageModel {
+class MessageModel extends MessageModelEntity {
   MessageModel({
     this.message,
     this.sendBy,
@@ -18,15 +20,35 @@ class MessageModel {
     this.type,
     this.sendByStudent,
     this.personProfilLink,
-  });
+  }) : super(
+          message,
+          sendBy,
+          date,
+          imageLink,
+          type,
+          sendByStudent,
+          personProfilLink,
+        );
 
-  String message;
-  String sendBy;
-  DateTime date;
-  String imageLink;
-  String type;
-  bool sendByStudent;
-  String personProfilLink;
+  final String message;
+  final String sendBy;
+  final DateTime date;
+  final String imageLink;
+  final String type;
+  final bool sendByStudent;
+  final String personProfilLink;
+
+  factory MessageModel.fromMessageModelEntity(
+          MessageModelEntity messageModelEntity) =>
+      MessageModel(
+        message: messageModelEntity.message,
+        sendBy: messageModelEntity.sendBy,
+        date: messageModelEntity.date,
+        imageLink: messageModelEntity.imageLink,
+        personProfilLink: messageModelEntity.personProfilLink,
+        type: messageModelEntity.type,
+        sendByStudent: messageModelEntity.sendByStudent,
+      );
 
   factory MessageModel.fromJson(Map<String, dynamic> json) => MessageModel(
         message: json["message"],
@@ -36,7 +58,6 @@ class MessageModel {
         type: json["type"],
         sendByStudent: json["sendByStudent"],
         personProfilLink: json["personProfilLink"],
-        
       );
 
   Map<String, dynamic> toJson() => {

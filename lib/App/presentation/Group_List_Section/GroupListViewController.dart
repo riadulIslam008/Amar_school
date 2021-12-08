@@ -20,15 +20,17 @@ class GroupListViewController extends GetxController {
   String fristItemClassList;
   List groupList = [];
 
+  Rxn<List<GroupModelEntity>> _grounModelEntity = Rxn<List<GroupModelEntity>>();
+  List<GroupModelEntity> get groupModelEntity => _grounModelEntity.value;
+
   GroupListViewController(this._firebaseRepository);
 
   @override
   void onInit() {
-    fetchGroupList();
+    _grounModelEntity.bindStream(fetchGroupList());
     super.onInit();
   }
 
-//Todo ================ ## Create Group ## ================
   void createGroup({@required String className}) async {
     List memberList = [];
     GroupModelEntity _groupModelEntity =
@@ -41,11 +43,8 @@ class GroupListViewController extends GetxController {
         (r) => fetchGroupList());
   }
 
-  fetchGroupList() async {
+  fetchGroupList() {
     FetchGroupList _fetchGroupList = FetchGroupList(_firebaseRepository);
-    final response = _fetchGroupList();
-
-    groupList = await response.first;
-    update();
+    return _fetchGroupList();
   }
 }

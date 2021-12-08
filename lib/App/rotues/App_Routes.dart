@@ -11,4 +11,8 @@ abstract class Routes {
   static const PROFILE_PAGE = "/profile";
   static const GROUP_LIST_PAGE = "/groupList";
   static const TEACHER_CHAT_PAGE = "/teacherChatScreen";
+  static const STUDENT_CHAT = "/studentChatScreen";
+  static const GROUP_CALL_OR_CHATPAGE = "/groupcallORchatpage";
+  static const TEACHER_PROFILE = "/teacherProfile";
+  static const STUDENT_PROFILE = "/studentProfile";
 }

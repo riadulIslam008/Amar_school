@@ -4,15 +4,19 @@ import 'package:amer_school/App/data/dataSources/remote/Firebase_FireStore.dart'
 import 'package:amer_school/App/data/dataSources/remote/Firebase_Storage.dart';
 import 'package:amer_school/App/data/dataSources/remote/Flutter_Downloader.dart';
 import 'package:amer_school/App/data/models/Group_Model.dart';
+import 'package:amer_school/App/data/models/MessageModel.dart';
 import 'package:amer_school/App/data/models/TeacherDetailsModel.dart';
 import 'package:amer_school/App/data/models/VideoFileModel.dart';
 import 'package:amer_school/App/domain/entites/Group_List_Model_Entity.dart';
+import 'package:amer_school/App/domain/entites/Message_Model_entity.dart';
 import 'package:amer_school/App/domain/entites/Student_Model_Entity.dart';
+import 'package:amer_school/App/domain/entites/Teacher_Model_Entity.dart';
 import 'package:amer_school/App/domain/entites/Video_File_Entity.dart';
 import 'package:amer_school/App/domain/repositories/Firebase_Service.dart';
 import 'package:amer_school/App/domain/useCases/Paramitters/Add_Member_Param.dart';
 import 'package:amer_school/App/domain/useCases/Paramitters/AuthParam.dart';
 import 'package:amer_school/App/domain/useCases/Paramitters/Download_File.dart';
+import 'package:amer_school/App/domain/useCases/Paramitters/Send_Message_Params.dart';
 import 'package:amer_school/App/domain/useCases/Paramitters/Upload_File.dart';
 import 'package:amer_school/App/data/models/StudentDetailsModel.dart';
 import 'package:amer_school/App/domain/useCases/Paramitters/User_Id.dart';
@@ -149,10 +153,6 @@ class FirebaseServiceImpl extends FirebaseService {
   }
 
   @override
-  Stream<List<VideoFileModel>> videoFile({String collectionName}) =>
-      _firebaseDatabaseApi.videoFileCollection(collectionName: collectionName);
-
-  @override
   Stream<List<GroupListModel>> fetchGroupList() =>
       _firebaseDatabaseApi.fetchGroupList();
 
@@ -168,4 +168,32 @@ class FirebaseServiceImpl extends FirebaseService {
       return Left(AppError(e.toString()));
     }
   }
+
+  @override
+  Stream<List<MessageModelEntity>> fetchMessageModel({String standerd}) {
+    return _firebaseDatabaseApi.fetchAllMessage(standerd: standerd);
+  }
+
+  @override
+  Stream<List<VideoFileEntity>> videoFileGet({String collectionName}) =>
+      _firebaseDatabaseApi.videoFile(collectionName: collectionName);
+
+  @override
+  Future<Either<AppError, void>> sendMessageInDatabase(
+      SendMessageParams sendMessageParams) async {
+    try {
+      final response = await _firebaseDatabaseApi.sendMessageInDb(
+          messageModel: MessageModel.fromMessageModelEntity(
+              sendMessageParams.messageModelEntity),
+          studentStanderd: sendMessageParams.studentStanderd);
+
+      return Right(response);
+    } catch (e) {
+      return Left(AppError(e.toString()));
+    }
+  }
+
+  @override
+  Future<List<TeacherModelEntity>> fetchTeacherList() async =>
+      await _firebaseDatabaseApi.fetchTeacherList();
 }

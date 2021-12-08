@@ -7,7 +7,7 @@ import 'package:amer_school/MyApp/Services/FirebaseApi.dart';
 import 'package:amer_school/MyApp/Services/VideoCallApi.dart';
 import 'package:amer_school/MyApp/Utiles/app_id.dart';
 import 'package:amer_school/App/presentation/Home_Section/HomeViewPageController.dart';
-import 'package:amer_school/MyApp/model/MessageModel.dart';
+import 'package:amer_school/App/data/models/MessageModel.dart';
 
 class CallController extends GetxController {
   final String channelName;

@@ -105,23 +105,24 @@ class StudentViewController extends GetxController {
     final String destination =
         "$fristItemClassListVariable/${fullNameController.text}";
 
-    FirebaseSignUp _firebaseSignUp = FirebaseSignUp(_firebaseServices);
-    final Either<AppError, String> _credential =
-        await _firebaseSignUp(AuthParam(email, passwordController.text));
+    UploadFile _uploadImage = UploadFile(_firebaseServices);
+    final Either<AppError, TaskSnap> imageUrl =
+        await _uploadImage(UploadParam(destination, imageFile, IMAGES));
 
-    _credential.fold((l) => print(l.errorMerrsage), (userUid) async {
-      UploadFile _uploadImage = UploadFile(_firebaseServices);
-      final Either<AppError, TaskSnap> imageUrl =
-          await _uploadImage(UploadParam(destination, imageFile, IMAGES));
+    imageUrl.fold((l) => errorDialogBox(description: IMAGE_ERROR_MESSAGE),
+        (imageLink) async {
+      FirebaseSignUp _firebaseSignUp = FirebaseSignUp(_firebaseServices);
+      final Either<AppError, String> _credential =
+          await _firebaseSignUp(AuthParam(email, passwordController.text));
 
-      imageUrl.fold((l) => errorDialogBox(description: IMAGE_ERROR_MESSAGE),
-          (r) async {
+      _credential.fold((l) => errorDialogBox(description: l.errorMerrsage),
+          (userUid) async {
         StudentModelEntity studentInfos = StudentModelEntity(
           studentName: fullNameController.text,
           studentRoll: rollController.text,
           studentClass: standerd.value,
           studentUid: userUid,
-          studentProfileLink: await r.taskSnapshot.ref.getDownloadURL(),
+          studentProfileLink: await imageLink.taskSnapshot.ref.getDownloadURL(),
         );
 
         PersonDataSave personDataSave = PersonDataSave(_firebaseServices);
@@ -133,7 +134,7 @@ class StudentViewController extends GetxController {
               name: fullNameController.text,
               roll: rollController.text,
               standerd: standerd.value,
-              profilePic: await r.taskSnapshot.ref.getDownloadURL()),
+              profilePic: await imageLink.taskSnapshot.ref.getDownloadURL()),
         );
 
         clearController();

@@ -1,42 +1,55 @@
 import 'dart:io';
 
 import 'package:agora_rtc_engine/rtc_engine.dart';
+import 'package:amer_school/App/Core/useCases/Alert_Message.dart';
+import 'package:amer_school/App/Core/utils/Universal_String.dart';
+import 'package:amer_school/App/domain/entites/Message_Model_entity.dart';
+import 'package:amer_school/App/domain/useCases/Fetch_Messages.dart';
+import 'package:amer_school/App/domain/useCases/Paramitters/Send_Message_Params.dart';
+import 'package:amer_school/App/domain/useCases/Paramitters/Upload_File.dart';
+import 'package:amer_school/App/domain/useCases/Send_Message_In_Firebase.dart';
+import 'package:amer_school/App/domain/useCases/Upload_Image.dart';
 import 'package:amer_school/App/presentation/Class_Live_Broadcast/BroadcastPage.dart';
 import 'package:amer_school/App/presentation/Group_Call/GroupCall.dart';
-import 'package:amer_school/MyApp/Services/FirebaseApi.dart';
 import 'package:amer_school/MyApp/Services/VideoCallApi.dart';
 import 'package:amer_school/App/presentation/Group_Call/CallController.dart';
 import 'package:amer_school/App/presentation/Home_Section/HomeViewPageController.dart';
-import 'package:amer_school/MyApp/model/MessageModel.dart';
 import 'package:amer_school/App/data/models/TeacherDetailsModel.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class GroupChatScreenController extends GetxController {
-  final homeController = Get.find<HomeViewController>();
+  final _firebaseRepository;
+  GroupChatScreenController(this._firebaseRepository);
 
   final VideoCallApi videoCallApi = VideoCallApi();
-  final FirebaseApi _firebaseApi = FirebaseApi();
-  final GetStorage getStorage = GetStorage();
   RxBool isChanged = false.obs;
-
   RxList listBool = <bool>[].obs;
 
   TextEditingController messageController, channelNameController;
-  var personType;
+  final String personType = Get.find<HomeViewController>().person;
 
   var scaffoldKey = GlobalKey<ScaffoldState>();
 
+  final String sectionName = Get.arguments;
+
+  Rxn<List<MessageModelEntity>> _messageModel = Rxn<List<MessageModelEntity>>();
+  List<MessageModelEntity> get messageModel => _messageModel.value;
   @override
   void onInit() async {
+    _messageModel.bindStream(fetchMessage(sectionName: sectionName));
     messageController = TextEditingController();
     channelNameController = TextEditingController();
-    personType = homeController.person;
     super.onInit();
+  }
+
+  @override
+  void onClose() {
+    messageController.dispose();
+    channelNameController.dispose();
+    super.dispose();
   }
 
   visiable(int index) {
@@ -55,30 +68,28 @@ class GroupChatScreenController extends GetxController {
       String personName,
       String personProfileImage}) async {
     XFile selectedFile = await ImagePicker().pickImage(source: imageSource);
-    try {
-      print(sectionName);
-      if (selectedFile != null) {
-        print(selectedFile);
-        final String destination = "$sectionName/message";
-        TaskSnapshot task =
-            await _firebaseApi.uploadFile(destination, File(selectedFile.path));
 
-        try {
-          final imageUrl = await task.ref.getDownloadURL();
+    if (selectedFile != null) {
+      final String destination = "$sectionName/message";
+      Get.back();
+      UploadFile _uploadImage = UploadFile(_firebaseRepository);
+      final _either = await _uploadImage(
+          UploadParam(destination, File(selectedFile.path), IMAGES));
+      _either.fold((l) => errorDialogBox(description: l.errorMerrsage),
+          (uploadedImageUrl) async {
+        MessageModelEntity _messageModel = MessageModelEntity(
+            null,
+            personName,
+            DateTime.now(),
+            await uploadedImageUrl.taskSnapshot.ref.getDownloadURL(),
+            IMAGES,
+            personType == STUDENT ? true : false,
+            personProfileImage);
 
-          await sendMessage(
-            personName: personName,
-            standerd: sectionName,
-            personProfileImage: personProfileImage,
-            type: "Image",
-            imageLink: imageUrl,
-          );
-        } catch (e) {}
-      } else {
-        return null;
-      }
-    } catch (e) {
-      print(e);
+        sendMessage(messageMap: _messageModel, standerd: sectionName);
+      });
+    } else {
+      return null;
     }
   }
 
@@ -91,36 +102,15 @@ class GroupChatScreenController extends GetxController {
     }
   }
 
-  @override
-  void dispose() {
-    messageController.dispose();
-    channelNameController.dispose();
-    super.dispose();
-  }
+  Future<void> sendMessage(
+      {MessageModelEntity messageMap, String standerd}) async {
+    SendMessageInFirebase _sendMessageInFirebase =
+        SendMessageInFirebase(_firebaseRepository);
+    final _either =
+        await _sendMessageInFirebase(SendMessageParams(messageMap, standerd));
 
-  sendMessage(
-      {String personName,
-      String standerd,
-      String message,
-      String personProfileImage,
-      String type,
-      String imageLink}) async {
-    MessageModel messageMap = MessageModel(
-      personProfilLink: personProfileImage,
-      message: message,
-      sendBy: personName,
-      date: DateTime.now(),
-      type: type,
-      sendByStudent: personType == "student" ? true : false,
-      imageLink: imageLink,
-    );
-
-    bool result = await _firebaseApi.addMessageToGroup(
-        messageMap: messageMap, standerd: standerd);
-    print("class: $standerd");
-    result
-        ? print("success")
-        : Get.snackbar("Send Error", "message can't send");
+    _either.fold(
+        (l) => errorDialogBox(description: l.errorMerrsage), (r) => null);
     messageController.clear();
   }
 
@@ -136,11 +126,11 @@ class GroupChatScreenController extends GetxController {
     String message = "Sir $personName is On LIVE";
 
     await sendMessage(
-      personName: personName,
+      // personName: personName,
       standerd: studentClass,
-      message: message,
-      personProfileImage: teacherProfile,
-      type: "message",
+      // message: message,
+      // personProfileImage: teacherProfile,
+      // type: "message",
     );
     bool result = await videoCallApi
         .createStreamGroup(personName.toLowerCase().replaceAll(" ", ''));
@@ -179,5 +169,11 @@ class GroupChatScreenController extends GetxController {
     } else {
       return;
     }
+  }
+
+  //* ================ Fetch Messsages ==================
+  fetchMessage({String sectionName}) {
+    FetchMessages _fetchMessage = FetchMessages(_firebaseRepository);
+    return _fetchMessage(standerd: sectionName);
   }
 }

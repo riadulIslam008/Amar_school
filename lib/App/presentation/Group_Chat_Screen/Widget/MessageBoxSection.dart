@@ -1,3 +1,5 @@
+import 'package:amer_school/App/Core/utils/Universal_String.dart';
+import 'package:amer_school/App/domain/entites/Message_Model_entity.dart';
 import 'package:amer_school/App/presentation/ClassRouten/Routen.dart';
 import 'package:amer_school/App/presentation/Group_Chat_Screen/Widget/TextButtonWidget.dart';
 import 'package:amer_school/App/presentation/Group_Chat_Screen/GroupChatScreenController.dart';
@@ -19,6 +21,8 @@ class MessageBoxsection extends GetWidget<GroupChatScreenController> {
       this.context,
       this.name,
       this.standerd});
+
+  final ScrollController _scrollController = ScrollController();
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -39,12 +43,14 @@ class MessageBoxsection extends GetWidget<GroupChatScreenController> {
         ),
         Expanded(
           child: Container(
-            padding: EdgeInsets.only(left: 5, right: 5),
-            height: 50,
+            height: 60,
             child: TextField(
               onChanged: (String typeText) =>
                   controller.textFieldOnChange(typeText: typeText),
               cursorHeight: 30,
+              maxLines: null,
+              scrollController: _scrollController,
+              textInputAction: TextInputAction.newline,
               decoration: InputDecoration(
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.all(
@@ -61,14 +67,21 @@ class MessageBoxsection extends GetWidget<GroupChatScreenController> {
           height: 50,
           width: 50,
           child: IconButton(
-            onPressed: () => controller.sendMessage(
-              personName: name,
-              standerd: standerd,
-              message: controller.messageController.text,
-              personProfileImage: personProfileImage,
-              type: "message",
-              imageLink: "",
-            ),
+            onPressed: () {
+              MessageModelEntity _messageModel = MessageModelEntity(
+                  controller.messageController.text,
+                  name,
+                  DateTime.now(),
+                  null,
+                  MESSAGE,
+                  controller.personType == STUDENT ? true : false,
+                  personProfileImage);
+
+              controller.sendMessage(
+                messageMap: _messageModel,
+                standerd: standerd,
+              );
+            },
             icon: Icon(
               Icons.send,
               size: 35,

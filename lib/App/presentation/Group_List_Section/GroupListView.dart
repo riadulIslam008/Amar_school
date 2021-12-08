@@ -20,15 +20,18 @@ class GroupListView extends StatelessWidget {
         children: [
           Expanded(
             child: Container(
-              child: GetBuilder<GroupListViewController>(
+              child: GetX<GroupListViewController>(
                 builder: (controller) {
-                  return ListView.builder(
-                    itemCount: controller.groupList.length,
-                    itemBuilder: (_, index) {
-                      return GroupItem(
-                          groupName: controller.groupList[index].groupName);
-                    },
-                  );
+                  return controller.groupModelEntity != null
+                      ? ListView.builder(
+                          itemCount: controller.groupModelEntity.length,
+                          itemBuilder: (_, index) {
+                            return GroupItem(
+                                groupName:
+                                    controller.groupModelEntity[index].groupName);
+                          },
+                        )
+                      : Container();
                 },
               ),
             ),

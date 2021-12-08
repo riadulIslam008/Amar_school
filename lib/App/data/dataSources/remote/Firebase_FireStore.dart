@@ -1,11 +1,12 @@
 import 'package:amer_school/App/Core/utils/Universal_String.dart';
 import 'package:amer_school/App/data/models/Group_Model.dart';
+import 'package:amer_school/App/data/models/MessageModel.dart';
 import 'package:amer_school/App/data/models/StudentDetailsModel.dart';
 import 'package:amer_school/App/data/models/TeacherDetailsModel.dart';
 import 'package:amer_school/MyApp/Utiles/UniversalString.dart';
 import 'package:amer_school/App/data/models/VideoFileModel.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
 abstract class FirebaseDatabaseApi {
   Future<void> personDetailsSave({@required StudentDetailsModel personInfo});
@@ -24,15 +25,23 @@ abstract class FirebaseDatabaseApi {
   Future<TeacherDetailsModel> fetchTeacherDetailsModel(
       {@required String userid});
 
-  Stream<List<VideoFileModel>> videoFileCollection(
-      {@required String collectionName});
+  Stream<List<VideoFileModel>> videoFile({@required String collectionName});
 
+//** =============== Group Section =========== */
   Future<void> createGroup(GroupListModel groupListModel);
 
   Stream<List<GroupListModel>> fetchGroupList();
+
+  //** ============ Message Section ========= */
+  Future<void> sendMessageInDb(
+      {@required MessageModel messageModel, @required String studentStanderd});
+
+  Stream<List<MessageModel>> fetchAllMessage({@required String standerd});
+
+  Future<List<TeacherDetailsModel>> fetchTeacherList();
 }
 
-//Todo =============== Implemention Class ================ //
+//** **/ =============== Implemention Class ================ //
 class FirebaseDatabaseApiImpl extends FirebaseDatabaseApi {
   final FirebaseFirestore _firebaseFirestore;
 
@@ -91,30 +100,81 @@ class FirebaseDatabaseApiImpl extends FirebaseDatabaseApi {
   }
 
   @override
-  Stream<List<VideoFileModel>> videoFileCollection({String collectionName}) {
-    final _snapShot =
-        _firebaseFirestore.collection("videos").orderBy("date").snapshots();
-
-    return _snapShot.map((event) => event.docs
-        .map(
-          (e) => VideoFileModel.fromJson(e.data()),
-        )
-        .toList());
-  }
-
-  @override
   Stream<List<GroupListModel>> fetchGroupList() {
-    final _snapShot = _firebaseFirestore.collection("groups").snapshots();
-    return _snapShot.map((querySnapShot) => querySnapShot.docs
-        .map((docSnapshot) => GroupListModel.fromMap(docSnapshot.data()))
-        .toList());
+    return _firebaseFirestore
+        .collection(GROUPS)
+        .snapshots()
+        .map((QuerySnapshot querySnapShot) {
+      List<GroupListModel> groupModel = [];
+      querySnapShot.docs.forEach((QueryDocumentSnapshot element) {
+        groupModel.add(GroupListModel.fromMap(element.data()));
+      });
+      return groupModel;
+    });
   }
 
   @override
   Future<void> createGroup(GroupListModel groupListModel) async {
     return await _firebaseFirestore
-        .collection("groups")
+        .collection(GROUPS)
         .doc(groupListModel.groupName)
         .set(groupListModel.toMap());
+  }
+
+  @override
+  Stream<List<MessageModel>> fetchAllMessage({String standerd}) {
+    return _firebaseFirestore
+        .collection(GROUPS)
+        .doc(standerd)
+        .collection(CHATS)
+        .orderBy("date", descending: true)
+        .snapshots()
+        .map((QuerySnapshot querySnapshot) {
+      List<MessageModel> _messageModel = [];
+      querySnapshot.docs.forEach((element) {
+        _messageModel.add(MessageModel.fromJson(element.data()));
+      });
+      return _messageModel;
+    });
+  }
+
+  @override
+  Stream<List<VideoFileModel>> videoFile({String collectionName}) {
+    return _firebaseFirestore
+        .collection("videos")
+        .orderBy("date", descending: true)
+        .snapshots()
+        .map((QuerySnapshot query) {
+      List<VideoFileModel> _videoFileModel = [];
+      query.docs.forEach((element) {
+        _videoFileModel.add(VideoFileModel.fromJson(element.data()));
+      });
+
+      return _videoFileModel;
+    });
+  }
+
+  @override
+  Future<void> sendMessageInDb(
+      {MessageModel messageModel, String studentStanderd}) async {
+    return await _firebaseFirestore
+        .collection(GROUPS)
+        .doc(studentStanderd)
+        .collection(CHATS)
+        .add(messageModel.toJson());
+  }
+
+  @override
+  Future<List<TeacherDetailsModel>> fetchTeacherList() async {
+    final QuerySnapshot _snapshot =
+        await _firebaseFirestore.collection(TEACHER_COLLECTION).get();
+
+    List<TeacherDetailsModel> _teacherList = [];
+    _snapshot.docs.forEach((QueryDocumentSnapshot element) {
+      _teacherList.add(TeacherDetailsModel.fromJson(element.data()));
+      return _teacherList;
+    });
+
+    return _teacherList;
   }
 }
