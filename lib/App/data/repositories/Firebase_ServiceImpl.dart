@@ -1,13 +1,17 @@
+import 'dart:io';
+
 import 'package:amer_school/App/Core/errors/App_Error.dart';
 import 'package:amer_school/App/data/dataSources/remote/Firebase_Auth.dart';
 import 'package:amer_school/App/data/dataSources/remote/Firebase_FireStore.dart';
 import 'package:amer_school/App/data/dataSources/remote/Firebase_Storage.dart';
 import 'package:amer_school/App/data/dataSources/remote/Flutter_Downloader.dart';
 import 'package:amer_school/App/data/models/Group_Model.dart';
+import 'package:amer_school/App/data/models/Members_List_Model.dart';
 import 'package:amer_school/App/data/models/MessageModel.dart';
 import 'package:amer_school/App/data/models/TeacherDetailsModel.dart';
 import 'package:amer_school/App/data/models/VideoFileModel.dart';
 import 'package:amer_school/App/domain/entites/Group_List_Model_Entity.dart';
+import 'package:amer_school/App/domain/entites/Members_Param.dart';
 import 'package:amer_school/App/domain/entites/Message_Model_entity.dart';
 import 'package:amer_school/App/domain/entites/Student_Model_Entity.dart';
 import 'package:amer_school/App/domain/entites/Teacher_Model_Entity.dart';
@@ -78,10 +82,10 @@ class FirebaseServiceImpl extends FirebaseService {
       {AddMemberParam memberParam}) async {
     try {
       final response = await _firebaseDatabaseApi.addStudentInGroup(
-          name: memberParam.name,
-          roll: memberParam.roll,
-          standerd: memberParam.standerd,
-          profilePic: memberParam.profilePic);
+        standerd: memberParam.standerd,
+        membersListModel:
+            MembersListModel.fromMembersListEntity(memberParam.membersParam),
+      );
 
       return Right(response);
     } catch (e) {
@@ -196,4 +200,42 @@ class FirebaseServiceImpl extends FirebaseService {
   @override
   Future<List<TeacherModelEntity>> fetchTeacherList() async =>
       await _firebaseDatabaseApi.fetchTeacherList();
+
+  @override
+  Future<List> fetchStudentList({String standerd}) async =>
+      await _firebaseDatabaseApi.fetchMembersList(standerd: standerd);
+
+  @override
+  Future<Either<AppError, void>> createStreamInstance(
+      {String channelName}) async {
+    try {
+      final snapShot = await _firebaseDatabaseApi.createStreamCallInstance(
+          channelName: channelName);
+      return Right(snapShot);
+    } catch (e) {
+      return Left(AppError(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<AppError, void>> addStudentInStream(
+      {AddMemberParam addMemberParam}) async {
+    try {
+      final response = await _firebaseDatabaseApi.addStudentInLiveStreamList(
+          channelID: addMemberParam.standerd,
+          memberListModel: MembersListModel.fromMembersListEntity(
+              addMemberParam.membersParam));
+
+      return Right(response);
+    } on SocketException {
+      return Left(AppError("Check your Internet and try again 😂"));
+    } on FirebaseException catch (e) {
+      print(e);
+      return Left(AppError(e.toString()));
+    }
+  }
+
+  @override
+  Stream<List<MembersModelEntity>> streamStudentList({String channelName}) =>
+      _firebaseDatabaseApi.fetchLiveStreamStudentList(channelName: channelName);
 }

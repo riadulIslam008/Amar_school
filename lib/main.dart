@@ -28,6 +28,7 @@ class MyApp extends StatelessWidget {
       getPages: AppPages.routes,
       title: 'Amar_School',
       theme: ThemeData.dark(),
+     
       home: AnnotatedRegion<SystemUiOverlayStyle>(
         value: SystemUiOverlayStyle.light,
         child: SafeArea(

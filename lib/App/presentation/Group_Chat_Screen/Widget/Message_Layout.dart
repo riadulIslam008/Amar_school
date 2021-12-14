@@ -1,7 +1,7 @@
-import 'package:amer_school/App/Core/Widgets_Arguments/Message_Show_Argum.dart';
+import 'package:amer_school/App/Core/asstes/Assest_Image.dart';
 import 'package:amer_school/App/domain/entites/Message_Model_entity.dart';
 import 'package:amer_school/App/presentation/Group_Chat_Screen/GroupChatScreenController.dart';
-import 'package:amer_school/App/presentation/Group_Chat_Screen/Widget/MessageShowDerection.dart';
+import 'package:amer_school/App/presentation/Group_Chat_Screen/Widget/Url_Image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -11,84 +11,97 @@ class Messagelayout extends GetWidget<GroupChatScreenController> {
   const Messagelayout(this._personInfo, this.sendByStudent, {Key key})
       : super(key: key);
 
+  static const SizedBox _sizedBox = SizedBox(width: 10);
+
   @override
   Widget build(BuildContext context) {
-    return GetX<GroupChatScreenController>(
-      builder: (controller) => controller.messageModel != null
-          ? ListView.builder(
-              reverse: true,
-              physics: BouncingScrollPhysics(),
-              itemCount: controller.messageModel.length,
-              itemBuilder: (context, index) {
-                MessageModelEntity _messageModelEntity =
-                    controller.messageModel[index];
+    return Obx(() => controller.messageModel != null
+        ? ListView.builder(
+            reverse: true,
+            itemCount: controller.messageModel.length,
+            itemBuilder: (context, index) {
+              //?? ============= veriable Start================ */
 
-                //** ============= veriable Start================ */
-                controller.listBool.add(false);
-                bool _sendByMe = sendByMe(_messageModelEntity);
-                Color _teacherMessageColor =
-                    teacherMessageColor(_messageModelEntity);
-                Alignment _alignment = textAlign(_messageModelEntity);
-                BorderRadius _borderRadius = borderRadius(_messageModelEntity);
-                //** ============= veriable Start================ */
+              controller.listBool.add(false);
+              MessageModelEntity _messageModel = controller.messageModel[index];
+              bool _sendByMe = sendByMe(_messageModel);
+              Color _teacherMessageColor = teacherMessageColor(_messageModel);
+              Alignment _alignment = textAlign(_messageModel);
+              BorderRadius _borderRadius = borderRadius(_messageModel);
 
-                return Container(
-                  margin: EdgeInsets.only(top: 20, left: 20, right: 20),
-                  child: Column(
-                    children: [
-                      Container(
-                        alignment: Alignment.center,
-                        child: Text("${_messageModelEntity.date}"
-                            .split(" ")[1]
-                            .substring(0, 5)),
+              //?? ============= veriable End================ */
+
+              return Container(
+                margin: const EdgeInsets.only(top: 20, left: 10, right: 10),
+                child: Column(
+                  children: [
+                    Container(
+                      alignment: Alignment.center,
+                      child: Text("${_messageModel.date}"
+                          .split(" ")[1]
+                          .substring(0, 5)),
+                    ),
+                    Container(
+                      alignment: _alignment,
+                      child: Row(
+                        mainAxisAlignment: _sendByMe
+                            ? MainAxisAlignment.end
+                            : MainAxisAlignment.start,
+                        children: [
+                          if (_sendByMe) ...[
+                            _showMessageOrImage(
+                                borderRadius: _borderRadius,
+                                imageUrl: _messageModel.imageLink,
+                                index: index,
+                                message: _messageModel.message,
+                                messageColor: _teacherMessageColor,
+                                messageType: _messageModel.type),
+                            _sizedBox,
+                            _circleAvater(_messageModel.personProfilLink)
+                          ] else ...[
+                            _circleAvater(_messageModel.personProfilLink),
+                            _sizedBox,
+                            _showMessageOrImage(
+                                borderRadius: _borderRadius,
+                                imageUrl: _messageModel.imageLink,
+                                index: index,
+                                message: _messageModel.message,
+                                messageColor: _teacherMessageColor,
+                                messageType: _messageModel.type),
+                          ]
+                        ],
                       ),
-                      // layout,
-                      MessageShow(
-                        messageShowArguments: MessageshowArguments(
-                          borderRadius: _borderRadius,
-                          imageUrl: _messageModelEntity.imageLink,
-                          index: index,
-                          messageColor: _teacherMessageColor,
-                          sendBy: _sendByMe,
-                          messageType: _messageModelEntity.type,
-                          message: _messageModelEntity.message,
-                          personProfileLink:
-                              _messageModelEntity.personProfilLink,
+                    ),
+                    Obx(
+                      () => Visibility(
+                        visible: controller.listBool[index],
+                        child: Container(
+                          padding: EdgeInsets.only(left: 20),
+                          alignment: _alignment,
+                          margin: EdgeInsets.only(top: 5),
+                          child: _messageModel.sendByStudent
+                              ? Text("sendBy ${_messageModel.sendBy}")
+                              : Text("sendBy Sir ${_messageModel.sendBy}"),
                         ),
                       ),
-                      Obx(
-                        () => Visibility(
-                          visible: controller.listBool[index],
-                          child: Container(
-                            padding: EdgeInsets.only(left: 20),
-                            alignment: _alignment,
-                            margin: EdgeInsets.only(top: 5),
-                            child: _messageModelEntity.sendByStudent
-                                ? Text("sendBy ${_messageModelEntity.sendBy}")
-                                : Text(
-                                    "sendBy Sir ${_messageModelEntity.sendBy}"),
-                          ),
+                    ),
+                    Obx(
+                      () => Visibility(
+                        visible: controller.listBool[index],
+                        child: Container(
+                          padding: EdgeInsets.only(left: 20),
+                          alignment: _alignment,
+                          margin: EdgeInsets.only(top: 5),
+                          child: Text("${_messageModel.date}".substring(0, 10)),
                         ),
                       ),
-                      Obx(
-                        () => Visibility(
-                          visible: controller.listBool[index],
-                          child: Container(
-                            padding: EdgeInsets.only(left: 20),
-                            alignment: _alignment,
-                            margin: EdgeInsets.only(top: 5),
-                            child: Text(
-                                "${_messageModelEntity.date}".substring(0, 10)),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            )
-          : Container(),
-    );
+                    ),
+                  ],
+                ),
+              );
+            },
+          )
+        : Container());
   }
 
   bool sendByMe(_messageModelEntity) {
@@ -117,5 +130,55 @@ class Messagelayout extends GetWidget<GroupChatScreenController> {
     return sendByMe(_messageModelEntity)
         ? BorderRadius.circular(10)
         : BorderRadius.circular(10);
+  }
+
+  CircleAvatar _circleAvater(String personProfileLink) {
+    return CircleAvatar(
+      radius: 20,
+      backgroundColor: Colors.black54,
+      backgroundImage: personProfileLink != null
+          ? NetworkImage(personProfileLink)
+          : AssetImage(PERSON_AVATER),
+    );
+  }
+
+  Container _textMessageLayout({
+    BorderRadius borderRadius,
+    Color messageColor,
+    String message,
+  }) {
+    return Container(
+      padding: EdgeInsets.all(10),
+      margin: EdgeInsets.only(top: 10),
+      decoration: BoxDecoration(
+        borderRadius: borderRadius,
+        color: messageColor,
+      ),
+      constraints: BoxConstraints(
+        maxWidth: Get.width / 2,
+      ),
+      child: Text(message),
+    );
+  }
+
+  GestureDetector _showMessageOrImage(
+      {int index,
+      String messageType,
+      String imageUrl,
+      BorderRadius borderRadius,
+      Color messageColor,
+      String message}) {
+    return GestureDetector(
+      onDoubleTap: () => controller.visiable(index),
+      onTap: () {
+        print("Working"); // New Page
+      },
+      child: messageType == "message"
+          ? _textMessageLayout(
+              borderRadius: borderRadius,
+              message: message,
+              messageColor: messageColor)
+          : UrlImage(imageUrl: imageUrl),
+    );
   }
 }

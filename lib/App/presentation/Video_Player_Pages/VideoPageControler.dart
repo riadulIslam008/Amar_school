@@ -3,11 +3,11 @@ import 'package:get/get.dart';
 import 'package:video_player/video_player.dart';
 
 class VideoDisplayController extends GetxController {
-  final String videoLink;
   VideoPlayerController videoPlayerController;
   ChewieController chewieController;
 
-  VideoDisplayController({this.videoLink});
+  final String videoLink = Get.arguments;
+
   @override
   void onInit() {
     initializedPlayer();
@@ -31,6 +31,7 @@ class VideoDisplayController extends GetxController {
   @override
   void onClose() {
     videoPlayerController.dispose();
+    videoPlayerController = null;
     chewieController = null;
     super.onClose();
   }

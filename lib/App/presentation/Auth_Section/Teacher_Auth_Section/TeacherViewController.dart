@@ -10,7 +10,6 @@ import 'package:amer_school/MyApp/Services/FirebaseApi.dart';
 import 'package:amer_school/MyApp/Utiles/UniversalString.dart';
 import 'package:amer_school/App/presentation/Home_Section/HomePageView.dart';
 import 'package:amer_school/App/Core/widgets/CircularPage.dart';
-import 'package:amer_school/App/presentation/Auth_Section/Teacher_Auth_Section/TeacherSignUP.dart';
 import 'package:amer_school/App/data/models/TeacherDetailsModel.dart';
 import 'package:dartz/dartz.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -43,8 +42,6 @@ class TeacherViewController extends GetxController {
     quotesController = TextEditingController();
     super.onInit();
   }
-
-  RxString fristSubject = TeacherSignUP().subject[0].obs;
 
   RxString fullName = "".obs;
   RxString mobileNumber = "".obs;
@@ -144,7 +141,6 @@ class TeacherViewController extends GetxController {
     mobileController.clear();
     passwordController.clear();
     quotesController.clear();
-    fristSubject.value = TeacherSignUP().subject[0];
   }
 
   @override

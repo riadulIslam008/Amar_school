@@ -9,6 +9,7 @@ import 'package:amer_school/App/domain/useCases/Create_Group.dart';
 
 //? =========== Fetch Group list Class ===== //
 import 'package:amer_school/App/domain/useCases/Fetch_Group_List.dart';
+import 'package:amer_school/App/presentation/DropDown_Section/DropDown_Controller.dart';
 
 //? ========== packages =========== //
 import 'package:flutter/material.dart';
@@ -17,7 +18,7 @@ import 'package:get/get.dart';
 class GroupListViewController extends GetxController {
   final _firebaseRepository;
 
-  String fristItemClassList;
+ final String studentSection = Get.find<DropDownController>().fristItemClassListVariable;
   List groupList = [];
 
   Rxn<List<GroupModelEntity>> _grounModelEntity = Rxn<List<GroupModelEntity>>();

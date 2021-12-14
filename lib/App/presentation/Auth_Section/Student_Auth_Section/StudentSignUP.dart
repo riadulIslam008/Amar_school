@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:amer_school/App/presentation/Auth_Section/Student_Auth_Section/Widgets/DropDown_Section.dart';
+import 'package:amer_school/App/presentation/DropDown_Section/DropDown_Section.dart';
 import 'package:amer_school/App/presentation/Group_Chat_Screen/Widget/TextButtonWidget.dart';
 import 'package:amer_school/App/presentation/Upload_FIle_Section/Widgets/TextFieldWidget.dart';
 import 'package:amer_school/App/presentation/Auth_Section/Student_Auth_Section/studentLogin.dart';
@@ -61,7 +61,7 @@ class StudentSignup extends GetWidget<StudentViewController> {
                       ),
                     ),
                     SizedBox(width: 15),
-                    DropDownSection(),
+                    Expanded(child: DropDownSection()),
                   ],
                 ),
                 emptySpace,
@@ -80,8 +80,7 @@ class StudentSignup extends GetWidget<StudentViewController> {
                 MaterialButton(
                   minWidth: double.infinity,
                   color: Colors.yellow[900],
-                  onPressed: () => controller.signUP(
-                      standerdSection: controller.fristItemClassListVariable),
+                  onPressed: () => controller.signUP(),
                   child: Text("SIGNUP"),
                 ),
                 emptySpace,

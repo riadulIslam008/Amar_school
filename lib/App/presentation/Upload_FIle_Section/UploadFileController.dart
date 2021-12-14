@@ -8,6 +8,7 @@ import 'package:amer_school/App/domain/entites/Video_File_Entity.dart';
 import 'package:amer_school/App/domain/useCases/Paramitters/Upload_File.dart';
 import 'package:amer_school/App/domain/useCases/Save_Video_Infos.dart';
 import 'package:amer_school/App/domain/useCases/Upload_Image.dart';
+import 'package:amer_school/App/presentation/DropDown_Section/DropDown_Controller.dart';
 import 'package:amer_school/App/presentation/Home_Section/HomeViewPageController.dart';
 import 'package:amer_school/App/domain/entites/Task_SnapShot.dart';
 import 'package:dartz/dartz.dart';
@@ -18,6 +19,8 @@ class UploadFileController extends GetxController {
   UploadFileController(this._firebaseRepository);
   final homeController = Get.find<HomeViewController>();
   final _firebaseRepository;
+
+  final String studentSection = Get.find<DropDownController>().fristItemClassListVariable;
 
   TextEditingController titleController, discriptionController;
 
@@ -42,8 +45,6 @@ class UploadFileController extends GetxController {
   RxDouble videoParcentage = 0.0.obs;
   RxBool isUploading = false.obs;
 
-  String fristItemClassSerial;
-
   Future<void> uploadVideosAndImage() async {
     if (titleController.value.text.trim() != null &&
         discriptionController.value.text.trim() != null) {
@@ -55,7 +56,7 @@ class UploadFileController extends GetxController {
           videoUrl,
           discriptionController.value.text,
           date,
-          fristItemClassSerial,
+          studentSection,
           homeController.teacherInfo.teacherProfileLink);
 
       SaveVideoInfos _saveVideoinfos = SaveVideoInfos(_firebaseRepository);

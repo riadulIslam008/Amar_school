@@ -37,7 +37,7 @@ class TeacherList extends GetWidget<TeacherListController> {
                   trailing: Icon(Icons.arrow_right),
                   onTap: () {
                     Get.toNamed(Routes.TEACHER_PROFILE,
-                        arguments: [_teacherModelEntity, true]);
+                        arguments: [controller.teacherList[index], true]);
                   },
                 ),
               );

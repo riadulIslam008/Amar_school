@@ -28,9 +28,6 @@ import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:amer_school/App/rotues/App_Routes.dart';
 import 'package:amer_school/MyApp/Utiles/UniversalString.dart';
 
-//? ============= Bindings =============//
-import 'package:amer_school/di/Bindings.dart';
-
 //? ============= Packages =============//
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
@@ -62,7 +59,7 @@ class HomeViewController extends GetxController {
         _receivePort.sendPort, "donwloadingVideo");
     FlutterDownloader.registerCallback(downloaderCallback);
     _receivePort.listen((message) {
-      print(message);
+    //  print(message);
     });
     initialFunction();
     super.onInit();
@@ -132,9 +129,7 @@ class HomeViewController extends GetxController {
 
   //Todo ============== Video Play ====================##
   void videoPlay({@required String videoLink}) async {
-    // ignore: await_only_futures
-    await Binding().videoPageCall(videoLink);
-    Get.toNamed(Routes.VIDEO_PLAY_PAGE);
+    Get.toNamed(Routes.VIDEO_PLAY_PAGE, arguments: videoLink);
   }
 
   //Todo ============== Fetch Stream as QuerySnapshots ==========##

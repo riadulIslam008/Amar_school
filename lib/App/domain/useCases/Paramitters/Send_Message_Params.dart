@@ -1,5 +1,4 @@
 import 'package:amer_school/App/domain/entites/Message_Model_entity.dart';
-import 'package:amer_school/App/domain/useCases/UseCases.dart';
 import 'package:equatable/equatable.dart';
 
 class SendMessageParams extends Equatable {

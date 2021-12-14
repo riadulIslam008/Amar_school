@@ -14,7 +14,7 @@ class HomePageLoadingView extends GetWidget<HomeViewController> {
 
   @override
   Widget build(BuildContext context) {
-    final _width = Get.width - 100;
+    final _width = Get.width;
     final TextStyle _style = TextStyle(
       fontSize: 17,
       fontWeight: FontWeight.bold,
@@ -47,7 +47,7 @@ class HomePageLoadingView extends GetWidget<HomeViewController> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             CircleAvatar(
-              radius: 30,
+              radius: 22,
               backgroundColor: Colors.blueGrey[400],
               backgroundImage: videoFileModel.teacherProfileImage == null
                   ? AssetImage(PERSON_AVATER)
@@ -109,14 +109,15 @@ class HomePageLoadingView extends GetWidget<HomeViewController> {
   }
 
 //
-// ─── PLAYVIDEO ──────────────────────────────────────────────────────────────────
+//Todo ─── PLAYVIDEO ──────────────────────────────────────────────────────────────────
 //
   void playButton() {
-    controller.videoPlay(videoLink: videoFileModel.videoFileLink);
+     controller.videoPlay(videoLink: videoFileModel.videoFileLink);
+  
   }
 
 //
-// ─── DOWNLOAD VIDEO ─────────────────────────────────────────────────────────────
+//Todo ─── DOWNLOAD VIDEO ─────────────────────────────────────────────────────────────
 //
   void downloadVideo() {
     controller.downloadFile(

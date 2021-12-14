@@ -32,8 +32,8 @@ class BottomButton extends GetWidget<GroupListViewController> {
   }
 
   void _onPressed() {
-    if (controller.fristItemClassList != null) {
-      controller.createGroup(className: controller.fristItemClassList);
+    if (controller.studentSection != null) {
+      controller.createGroup(className: controller.studentSection);
       
     }
     Get.back();

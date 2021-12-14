@@ -4,6 +4,8 @@ import 'package:amer_school/App/data/dataSources/remote/Firebase_Storage.dart';
 import 'package:amer_school/App/data/dataSources/remote/Flutter_Downloader.dart';
 import 'package:amer_school/App/data/repositories/Firebase_ServiceImpl.dart';
 import 'package:amer_school/App/domain/repositories/Firebase_Service.dart';
+import 'package:amer_school/App/presentation/Class_Live_Broadcast/Broad_Cast_Controller.dart';
+import 'package:amer_school/App/presentation/DropDown_Section/DropDown_Controller.dart';
 import 'package:amer_school/App/presentation/Profile_Section/Profile_Controller.dart';
 import 'package:amer_school/App/presentation/Teacher_List/Teacher_list_Controller.dart';
 import 'package:amer_school/App/presentation/Upload_FIle_Section/UploadFileController.dart';
@@ -44,6 +46,8 @@ class Binding extends Bindings {
         _firebaseDatabaseApi,
         _flutterDownload);
 
+    Get.lazyPut<DropDownController>(() => DropDownController(), fenix: true);
+
     Get.lazyPut<StudentViewController>(
         () => StudentViewController(_firebaseServices, _getStorage),
         fenix: true);
@@ -59,6 +63,7 @@ class Binding extends Bindings {
     Get.lazyPut<GroupChatScreenController>(
         () => GroupChatScreenController(_firebaseServices),
         fenix: true);
+
     Get.lazyPut<RoutenController>(() => RoutenController(), fenix: true);
     Get.lazyPut<UploadFileController>(
         () => UploadFileController(_firebaseServices),
@@ -68,13 +73,14 @@ class Binding extends Bindings {
         () => TeacherListController(_firebaseServices),
         fenix: true);
     Get.lazyPut<ProfileController>(
-        () => ProfileController(_firebaseAuth, _getStorage), fenix: true);
-  }
+        () => ProfileController(_firebaseAuth, _getStorage),
+        fenix: true);
 
-  void videoPageCall(String videoLink) async {
-    // ignore: await_only_futures
-    await Get.lazyPut<VideoDisplayController>(
-        () => VideoDisplayController(videoLink: videoLink),
+    Get.lazyPut<BroadCastController>(
+        () => BroadCastController(_firebaseServices),
+        fenix: true);
+
+    Get.lazyPut<VideoDisplayController>(() => VideoDisplayController(),
         fenix: true);
   }
 }

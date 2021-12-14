@@ -8,13 +8,11 @@ import 'package:amer_school/App/presentation/Group_Chat_Screen/Widget/MessageBox
 import 'package:amer_school/App/presentation/Group_Chat_Screen/Widget/Message_Layout.dart';
 
 //?? ============== Controller ================= */
-import 'package:amer_school/App/presentation/Home_Section/HomeViewPageController.dart';
 import 'package:amer_school/App/presentation/Group_Chat_Screen/GroupChatScreenController.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class TeacherViewChatScreen extends GetWidget<GroupChatScreenController> {
-  final teacherInfo = Get.find<HomeViewController>().teacherInfo;
   final String studentClass = Get.arguments;
 
   @override
@@ -31,14 +29,14 @@ class TeacherViewChatScreen extends GetWidget<GroupChatScreenController> {
         body: Column(
           children: [
             Expanded(
-              child: Messagelayout(teacherInfo, false),
+              child: Messagelayout(controller.teacherInfo, false),
             ),
             SizedBox(height: 10),
             MessageBoxsection(
               context: context,
-              name: teacherInfo.teacherName,
+              name: controller.teacherInfo.teacherName,
               standerd: studentClass,
-              personProfileImage: teacherInfo.teacherProfileLink,
+              personProfileImage: controller.teacherInfo.teacherProfileLink,
               isTeacher: true,
             ),
             SizedBox(
@@ -53,12 +51,11 @@ class TeacherViewChatScreen extends GetWidget<GroupChatScreenController> {
             classStanderd: studentClass,
             isStudent: false,
             context: context,
-            teacherModel: teacherInfo),
+            teacherModel: controller.teacherInfo),
       ),
     );
   }
 
-  //*
   //*
   //Todo ================== AppBar ====================##
   //*
@@ -72,9 +69,11 @@ class TeacherViewChatScreen extends GetWidget<GroupChatScreenController> {
       centerTitle: true,
       actions: [
         IconButton(
-          onPressed: () {},
-          // onPressed: () => controller.liveStream(teacherInfo.teacherName,
-          //     studentClass, teacherInfo.teacherProfileLink),
+          onPressed: () => controller.liveStream(
+            controller.teacherInfo.teacherName,
+            studentClass,
+            controller.teacherInfo.teacherProfileLink,
+          ),
           icon: Icon(Icons.live_tv),
           tooltip: "Live stream",
         ),

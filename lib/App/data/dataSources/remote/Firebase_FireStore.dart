@@ -1,21 +1,24 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
+
 import 'package:amer_school/App/Core/utils/Universal_String.dart';
 import 'package:amer_school/App/data/models/Group_Model.dart';
+import 'package:amer_school/App/data/models/Members_List_Model.dart';
 import 'package:amer_school/App/data/models/MessageModel.dart';
 import 'package:amer_school/App/data/models/StudentDetailsModel.dart';
 import 'package:amer_school/App/data/models/TeacherDetailsModel.dart';
-import 'package:amer_school/MyApp/Utiles/UniversalString.dart';
 import 'package:amer_school/App/data/models/VideoFileModel.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
+import 'package:amer_school/MyApp/Utiles/UniversalString.dart';
 
 abstract class FirebaseDatabaseApi {
   Future<void> personDetailsSave({@required StudentDetailsModel personInfo});
 
   Future<void> addStudentInGroup({
-    @required String name,
-    @required String roll,
+    // @required String name,
+    // @required int roll,
+    // @required String profilePic,
+    @required MembersListModel membersListModel,
     @required String standerd,
-    @required String profilePic,
   });
 
   Future<void> saveVideoFileInfos(VideoFileModel videoFileModel);
@@ -39,9 +42,20 @@ abstract class FirebaseDatabaseApi {
   Stream<List<MessageModel>> fetchAllMessage({@required String standerd});
 
   Future<List<TeacherDetailsModel>> fetchTeacherList();
+
+  Future<List> fetchMembersList({String standerd});
+
+  //** */ =============== Video Stream Instance ================= */
+  Future<void> createStreamCallInstance({String channelName});
+
+  Future<void> addStudentInLiveStreamList(
+      {String channelID, MembersListModel memberListModel});
+
+  Stream<List<MembersListModel>> fetchLiveStreamStudentList(
+      {@required String channelName});
 }
 
-//** **/ =============== Implemention Class ================ //
+//Todo =============== Implemention Class ================ //
 class FirebaseDatabaseApiImpl extends FirebaseDatabaseApi {
   final FirebaseFirestore _firebaseFirestore;
 
@@ -49,13 +63,14 @@ class FirebaseDatabaseApiImpl extends FirebaseDatabaseApi {
 
   @override
   Future<void> addStudentInGroup(
-      {String name, String roll, String standerd, String profilePic}) async {
+      {String standerd, MembersListModel membersListModel}) async {
     List members = [];
-    members.add({
-      "name": name,
-      "roll": roll,
-      "profilePic": profilePic,
-    });
+    // members.add({
+    //   "name": name,
+    //   "roll": roll,
+    //   "profileImage": profilePic,
+    // });
+    members.add(membersListModel.toMap());
 
     await _firebaseFirestore
         .collection(groups)
@@ -176,5 +191,53 @@ class FirebaseDatabaseApiImpl extends FirebaseDatabaseApi {
     });
 
     return _teacherList;
+  }
+
+  @override
+  Future<List> fetchMembersList({String standerd}) async {
+    final _snapShot =
+        await _firebaseFirestore.collection(GROUPS).doc(standerd).get();
+
+    List _membersList = [];
+
+    _membersList = _snapShot.data()["members"];
+    return _membersList;
+  }
+
+  @override
+  Future<void> createStreamCallInstance({String channelName}) async {
+    List _members = [];
+    return await _firebaseFirestore
+        .collection(LIVE_STREAM)
+        .doc(channelName)
+        .set({
+      "members": _members,
+    });
+  }
+
+  @override
+  Stream<List<MembersListModel>> fetchLiveStreamStudentList(
+      {String channelName}) {
+    return _firebaseFirestore
+        .collection(LIVE_STREAM)
+        .doc(channelName)
+        .snapshots()
+        .map((query) {
+      List _membersList = <MembersListModel>[];
+      query.data()["members"].forEach((studentDetrails) {
+        _membersList.add(MembersListModel.fromMap(studentDetrails));
+      });
+      return _membersList;
+    });
+  }
+
+  @override
+  Future<void> addStudentInLiveStreamList(
+      {String channelID, MembersListModel memberListModel}) async {
+    List _members = [];
+    _members.add(memberListModel.toMap());
+    await _firebaseFirestore.collection(LIVE_STREAM).doc(channelID).update({
+      "members": FieldValue.arrayUnion(_members),
+    });
   }
 }

@@ -64,7 +64,7 @@ class VideoCallApi {
       @required String studentClass}) async {
     List members = [];
     try {
-      members.add({"name": studentName, "Roll": studentRoll});
+      members.add({"name": studentName, "roll": studentRoll});
       await firebaseGroupCall
           .collection(GROUP_CALL)
           .doc(studentClass)
@@ -91,7 +91,7 @@ class VideoCallApi {
     return false;
   }
 
-  //Todo ================= ## Video Stream Create Group List and show## ==================
+  //Todo ================= ## Video Stream Create Group List and show ==================
   Future<bool> createStreamGroup(String channelName) async {
     List _members = [];
     try {

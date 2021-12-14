@@ -2,6 +2,7 @@ import 'package:amer_school/App/presentation/Auth_Section/AuthPage.dart';
 import 'package:amer_school/App/presentation/Auth_Section/Student_Auth_Section/StudentSignUP.dart';
 import 'package:amer_school/App/presentation/Auth_Section/Student_Auth_Section/studentLogin.dart';
 import 'package:amer_school/App/presentation/Auth_Section/Teacher_Auth_Section/TeacherLogin.dart';
+import 'package:amer_school/App/presentation/Class_Live_Broadcast/Broad_Cast_View.dart';
 import 'package:amer_school/App/presentation/Group_Chat_Screen/GroupcallORchatscreen.dart';
 import 'package:amer_school/App/presentation/Group_Chat_Screen/Student_Chat/StudentchatScreen.dart';
 import 'package:amer_school/App/presentation/Group_Chat_Screen/Teacher_Chat_Screen/TeacherViewChatScreen.dart';
@@ -34,5 +35,6 @@ class AppPages {
         page: () => GroupCallORchatScreen()),
     GetPage(name: Routes.TEACHER_PROFILE, page: ()=> TeacherProfileView()),
     GetPage(name: Routes.STUDENT_PROFILE, page: ()=> StudentProfileView()),
+    GetPage(name: Routes.BROAD_CAST_VIEW, page: ()=> BroadCastview()),
   ];
 }

@@ -1,20 +1,43 @@
 import 'dart:io';
 
+//? ==================== Agora Rtc Engine ================//
 import 'package:agora_rtc_engine/rtc_engine.dart';
+import 'package:amer_school/App/Core/errors/App_Error.dart';
+
+//? ==================== Core Items =======================//
 import 'package:amer_school/App/Core/useCases/Alert_Message.dart';
+import 'package:amer_school/App/Core/useCases/App_Permission.dart';
+import 'package:amer_school/App/Core/useCases/Random_String.dart';
 import 'package:amer_school/App/Core/utils/Universal_String.dart';
+
+//? ==================== Models =======================//
+
+import 'package:amer_school/App/domain/entites/Members_Param.dart';
 import 'package:amer_school/App/domain/entites/Message_Model_entity.dart';
+
+//? ==================== Use Cases =======================//
+import 'package:amer_school/App/domain/useCases/Add_Student_In_Stream.dart';
+import 'package:amer_school/App/domain/useCases/Cereate_Stream_Instance.dart';
 import 'package:amer_school/App/domain/useCases/Fetch_Messages.dart';
+import 'package:amer_school/App/domain/useCases/Fetch_Student_List.dart';
+import 'package:amer_school/App/domain/useCases/Paramitters/Add_Member_Param.dart';
 import 'package:amer_school/App/domain/useCases/Paramitters/Send_Message_Params.dart';
 import 'package:amer_school/App/domain/useCases/Paramitters/Upload_File.dart';
 import 'package:amer_school/App/domain/useCases/Send_Message_In_Firebase.dart';
 import 'package:amer_school/App/domain/useCases/Upload_Image.dart';
-import 'package:amer_school/App/presentation/Class_Live_Broadcast/BroadcastPage.dart';
+
+//? ==================== Group Call =======================//
 import 'package:amer_school/App/presentation/Group_Call/GroupCall.dart';
-import 'package:amer_school/MyApp/Services/VideoCallApi.dart';
 import 'package:amer_school/App/presentation/Group_Call/CallController.dart';
+
+//? ==================== Routes =======================//
+import 'package:amer_school/App/rotues/App_Routes.dart';
+import 'package:amer_school/MyApp/Services/VideoCallApi.dart';
 import 'package:amer_school/App/presentation/Home_Section/HomeViewPageController.dart';
 import 'package:amer_school/App/data/models/TeacherDetailsModel.dart';
+import 'package:dartz/dartz.dart';
+
+//? ==================== Packages =======================//
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -25,18 +48,24 @@ class GroupChatScreenController extends GetxController {
   GroupChatScreenController(this._firebaseRepository);
 
   final VideoCallApi videoCallApi = VideoCallApi();
+
+  final studentDetailsModel = Get.find<HomeViewController>().studentModel;
+  final teacherInfo = Get.find<HomeViewController>().teacherInfo;
+
   RxBool isChanged = false.obs;
   RxList listBool = <bool>[].obs;
+  RxList studentList = [].obs;
 
-  TextEditingController messageController, channelNameController;
+  final String randomString = generateRandomString(5);
   final String personType = Get.find<HomeViewController>().person;
-
-  var scaffoldKey = GlobalKey<ScaffoldState>();
-
   final String sectionName = Get.arguments;
 
-  Rxn<List<MessageModelEntity>> _messageModel = Rxn<List<MessageModelEntity>>();
+  var scaffoldKey = GlobalKey<ScaffoldState>();
+  TextEditingController messageController, channelNameController;
+
+  Rx<List<MessageModelEntity>> _messageModel = Rxn<List<MessageModelEntity>>();
   List<MessageModelEntity> get messageModel => _messageModel.value;
+
   @override
   void onInit() async {
     _messageModel.bindStream(fetchMessage(sectionName: sectionName));
@@ -56,12 +85,13 @@ class GroupChatScreenController extends GetxController {
     listBool[index] = !listBool[index];
   }
 
-  //Todo ============== OpenDrawer =======================##
+  //? */ ============== OpenDrawer =======================##
   void openDrawer() {
+    fetchStudentList(standerd: sectionName);
     scaffoldKey.currentState.openEndDrawer();
   }
 
-  //Todo ============== PickImage ====================##
+  //? */ ============== PickImage ====================##
   Future<void> pickImage(
       {@required ImageSource imageSource,
       String sectionName,
@@ -93,7 +123,7 @@ class GroupChatScreenController extends GetxController {
     }
   }
 
-//Todo ================= TextField  Function =============##
+//? */ ================= TextField  Function =============##
   textFieldOnChange({@required String typeText}) {
     if (typeText.trim() == null) {
       isChanged.value = false;
@@ -101,6 +131,8 @@ class GroupChatScreenController extends GetxController {
       isChanged.value = true;
     }
   }
+
+//? */ ================= Send Message  Function =============##
 
   Future<void> sendMessage(
       {MessageModelEntity messageMap, String standerd}) async {
@@ -120,36 +152,43 @@ class GroupChatScreenController extends GetxController {
     Get.back();
   }
 
-  //Todo ================ Live Stream ================== ##
-  void liveStream(
+  //? */ ================ Live Stream ================== ##
+  Future<void> liveStream(
       String personName, String studentClass, String teacherProfile) async {
-    String message = "Sir $personName is On LIVE";
+    bool camPer = await cameraPermission().isGranted;
+    bool micPer = await microPhonePermission().isGranted;
+    if (camPer && micPer) {
+      String message =
+          "Sir $personName is On LIVE Channel ID : $randomString    Click here for watch Live";
 
-    await sendMessage(
-      // personName: personName,
-      standerd: studentClass,
-      // message: message,
-      // personProfileImage: teacherProfile,
-      // type: "message",
-    );
-    bool result = await videoCallApi
-        .createStreamGroup(personName.toLowerCase().replaceAll(" ", ''));
-    await Permission.camera.request();
-    await Permission.microphone.request();
+      MessageModelEntity _messageModel = MessageModelEntity(message, personName,
+          DateTime.now(), "", "message", false, teacherProfile);
 
-    if (result) {
-      Get.to(
-        BroadcastPage(
-            channelName: personName.toLowerCase().replaceAll(" ", ''),
-            role: ClientRole.Broadcaster,
-            standerd: studentClass),
-      );
+      CreateStreamInstance _createstreamDocs =
+          CreateStreamInstance(_firebaseRepository);
+
+      final _either = await _createstreamDocs(randomString);
+
+      _either.fold((l) => errorDialogBox(description: l.errorMerrsage),
+          (r) async {
+        SendMessageInFirebase _sendMessageInFirebase =
+            SendMessageInFirebase(_firebaseRepository);
+        final _either = await _sendMessageInFirebase(
+            SendMessageParams(_messageModel, studentClass));
+
+        _either.fold((l) => errorDialogBox(description: l.errorMerrsage), (r) {
+          Get.toNamed(Routes.BROAD_CAST_VIEW,
+              arguments: [randomString, ClientRole.Broadcaster, studentClass]);
+        });
+      });
     } else {
-      Get.snackbar("Stream Error", "Check your Internet",
-          backgroundColor: Colors.red);
+      errorDialogBox(
+        description: CAMERA_AND_MICROPHONE,
+      );
     }
   }
 
+//? */ ================= Group Call  Function =============##
   void groupCall(
       {@required String classStaderd,
       @required TeacherDetailsModel teacherModel}) async {
@@ -163,7 +202,7 @@ class GroupChatScreenController extends GetxController {
       // ignore: await_only_futures
       await Get.put(CallController(
         channelName: classStaderd,
-        isTeacher: personType == true,
+        isTeacher: true,
       ));
       Get.to(() => GroupCall());
     } else {
@@ -171,9 +210,59 @@ class GroupChatScreenController extends GetxController {
     }
   }
 
-  //* ================ Fetch Messsages ==================
-  fetchMessage({String sectionName}) {
+  //? ================ Fetch Messsages ==================//
+  Stream<List<MessageModelEntity>> fetchMessage({String sectionName}) {
     FetchMessages _fetchMessage = FetchMessages(_firebaseRepository);
     return _fetchMessage(standerd: sectionName);
+  }
+
+  //? ================ Fetch Student List ==================//
+  Future<void> fetchStudentList({String standerd}) async {
+    FetchStudentList _fetchStudentList = FetchStudentList(_firebaseRepository);
+    studentList.value = await _fetchStudentList(standerd: standerd);
+  }
+
+  //? ================ Live Stram Confrim Function ==================//
+  Future<void> liveStreamConfrimForStudent({String channelId}) async {
+    bool camPer = await cameraPermission().isGranted;
+    bool micPer = await microPhonePermission().isGranted;
+
+    if (camPer && micPer) {
+      //Add Student in Members List
+      final _either = await _addStudentInStreamList(channelId: channelId);
+
+      _either.fold(
+        (l) => errorDialogBox(description: l.errorMerrsage),
+        (r) => Get.toNamed(
+          Routes.BROAD_CAST_VIEW,
+          arguments: [
+            channelId,
+            ClientRole.Audience,
+            studentDetailsModel.studentClass
+          ],
+        ),
+      );
+    } else {
+      errorDialogBox(
+        description: CAMERA_AND_MICROPHONE,
+      );
+    }
+  }
+
+  //? ================ Add Student In Firebase Function ==================//
+  Future<Either<AppError, void>> _addStudentInStreamList(
+      {String channelId}) async {
+    AddStudentInStream _addInStream = AddStudentInStream(_firebaseRepository);
+    final _either = await _addInStream(
+      AddMemberParam(
+        standerd: channelId,
+        membersParam: MembersModelEntity(
+            name: studentDetailsModel.studentName,
+            roll: int.parse(studentDetailsModel.studentRoll),
+            profilePic: studentDetailsModel.studentProfileLink),
+      ),
+    );
+    return _either.fold(
+        (l) => left(AppError(l.errorMerrsage)), (r) => Right(r));
   }
 }

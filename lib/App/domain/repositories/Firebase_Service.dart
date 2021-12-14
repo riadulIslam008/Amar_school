@@ -1,5 +1,6 @@
 import 'package:amer_school/App/Core/errors/App_Error.dart';
 import 'package:amer_school/App/domain/entites/Group_List_Model_Entity.dart';
+import 'package:amer_school/App/domain/entites/Members_Param.dart';
 import 'package:amer_school/App/domain/entites/Message_Model_entity.dart';
 import 'package:amer_school/App/domain/entites/Student_Model_Entity.dart';
 import 'package:amer_school/App/domain/entites/Teacher_Model_Entity.dart';
@@ -51,4 +52,13 @@ abstract class FirebaseService {
   Stream<List<MessageModelEntity>> fetchMessageModel({String standerd});
 
   Future<List<TeacherModelEntity>> fetchTeacherList();
+
+  Future<List> fetchStudentList({String standerd});
+
+  Future<Either<AppError, void>> createStreamInstance({String channelName});
+
+  Future<Either<AppError, void>> addStudentInStream({AddMemberParam addMemberParam});
+
+  Stream<List<MembersModelEntity>> streamStudentList({String channelName});
+
 }

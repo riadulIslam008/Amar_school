@@ -56,18 +56,14 @@ class HomePageView extends GetWidget<HomeViewController> {
       //
       //Todo ─── BODY ────────────────────────────────────────────────────────
       //
-      body: GetX<HomeViewController>(
-        builder: (controller) {
-          return controller.videosInfo != null
-              ? ListView.builder(
-                  itemCount: controller.videosInfo.length,
-                  physics: BouncingScrollPhysics(),
-                  itemBuilder: (_, index) => HomePageLoadingView(
-                      videoFileModel: controller.videosInfo[index]),
-                )
-              : Container();
-        },
-      ),
+      body: Obx(() => controller.videosInfo != null
+          ? ListView.builder(
+              itemCount: controller.videosInfo.length,
+              physics: BouncingScrollPhysics(),
+              itemBuilder: (_, index) => HomePageLoadingView(
+                  videoFileModel: controller.videosInfo[index]),
+            )
+          : Container()),
       //
       //Todo ─── FLOATING BUTTON ────────────────────────────────────────────────────────────
       //
