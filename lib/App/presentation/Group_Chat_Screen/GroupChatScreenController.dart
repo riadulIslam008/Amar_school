@@ -6,14 +6,15 @@ import 'package:amer_school/App/Core/errors/App_Error.dart';
 
 //? ==================== Core Items =======================//
 import 'package:amer_school/App/Core/useCases/Alert_Message.dart';
-import 'package:amer_school/App/Core/useCases/App_Permission.dart';
 import 'package:amer_school/App/Core/useCases/Random_String.dart';
 import 'package:amer_school/App/Core/utils/Universal_String.dart';
+import 'package:amer_school/App/data/models/TeacherDetailsModel.dart';
 
 //? ==================== Models =======================//
 
 import 'package:amer_school/App/domain/entites/Members_Param.dart';
 import 'package:amer_school/App/domain/entites/Message_Model_entity.dart';
+import 'package:amer_school/App/domain/entites/Task_SnapShot.dart';
 
 //? ==================== Use Cases =======================//
 import 'package:amer_school/App/domain/useCases/Add_Student_In_Stream.dart';
@@ -34,14 +35,11 @@ import 'package:amer_school/App/presentation/Group_Call/CallController.dart';
 import 'package:amer_school/App/rotues/App_Routes.dart';
 import 'package:amer_school/MyApp/Services/VideoCallApi.dart';
 import 'package:amer_school/App/presentation/Home_Section/HomeViewPageController.dart';
-import 'package:amer_school/App/data/models/TeacherDetailsModel.dart';
 import 'package:dartz/dartz.dart';
 
 //? ==================== Packages =======================//
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 class GroupChatScreenController extends GetxController {
   final _firebaseRepository;
@@ -69,6 +67,7 @@ class GroupChatScreenController extends GetxController {
   @override
   void onInit() async {
     _messageModel.bindStream(fetchMessage(sectionName: sectionName));
+    fetchStudentList(standerd: sectionName);
     messageController = TextEditingController();
     channelNameController = TextEditingController();
     super.onInit();
@@ -87,40 +86,39 @@ class GroupChatScreenController extends GetxController {
 
   //? */ ============== OpenDrawer =======================##
   void openDrawer() {
-    fetchStudentList(standerd: sectionName);
     scaffoldKey.currentState.openEndDrawer();
   }
 
   //? */ ============== PickImage ====================##
   Future<void> pickImage(
-      {@required ImageSource imageSource,
+      {selectedFile,
       String sectionName,
       String personName,
       String personProfileImage}) async {
-    XFile selectedFile = await ImagePicker().pickImage(source: imageSource);
+    final String destination = "$sectionName/message";
+    Get.back();
 
-    if (selectedFile != null) {
-      final String destination = "$sectionName/message";
-      Get.back();
-      UploadFile _uploadImage = UploadFile(_firebaseRepository);
-      final _either = await _uploadImage(
-          UploadParam(destination, File(selectedFile.path), IMAGES));
-      _either.fold((l) => errorDialogBox(description: l.errorMerrsage),
-          (uploadedImageUrl) async {
-        MessageModelEntity _messageModel = MessageModelEntity(
-            null,
-            personName,
-            DateTime.now(),
-            await uploadedImageUrl.taskSnapshot.ref.getDownloadURL(),
-            IMAGES,
-            personType == STUDENT ? true : false,
-            personProfileImage);
+    final _either = await _uploadImage(destination, selectedFile);
+    _either.fold((l) => errorDialogBox(description: l.errorMerrsage),
+        (uploadedImageUrl) async {
+      MessageModelEntity _messageModel = MessageModelEntity(
+          null,
+          personName,
+          DateTime.now(),
+          await uploadedImageUrl.taskSnapshot.ref.getDownloadURL(),
+          IMAGES,
+          personType == STUDENT ? true : false,
+          personProfileImage);
 
-        sendMessage(messageMap: _messageModel, standerd: sectionName);
-      });
-    } else {
-      return null;
-    }
+      sendMessage(messageMap: _messageModel, standerd: sectionName);
+    });
+  }
+
+  Future<Either<AppError, TaskSnap>> _uploadImage(
+      destination, selectedFile) async {
+    UploadFile _uploadImage = UploadFile(_firebaseRepository);
+    return await _uploadImage(
+        UploadParam(destination, File(selectedFile), IMAGES));
   }
 
 //? */ ================= TextField  Function =============##
@@ -155,59 +153,51 @@ class GroupChatScreenController extends GetxController {
   //? */ ================ Live Stream ================== ##
   Future<void> liveStream(
       String personName, String studentClass, String teacherProfile) async {
-    bool camPer = await cameraPermission().isGranted;
-    bool micPer = await microPhonePermission().isGranted;
-    if (camPer && micPer) {
-      String message =
-          "Sir $personName is On LIVE Channel ID : $randomString    Click here for watch Live";
+    String message =
+        "Sir $personName is On LIVE Channel ID : $randomString    Click here for watch Live";
 
-      MessageModelEntity _messageModel = MessageModelEntity(message, personName,
-          DateTime.now(), "", "message", false, teacherProfile);
+    MessageModelEntity _messageModel = MessageModelEntity(message, personName,
+        DateTime.now(), "", "message", false, teacherProfile);
 
-      CreateStreamInstance _createstreamDocs =
-          CreateStreamInstance(_firebaseRepository);
+    CreateStreamInstance _createstreamDocs =
+        CreateStreamInstance(_firebaseRepository);
 
-      final _either = await _createstreamDocs(randomString);
+    final _either = await _createstreamDocs(randomString);
 
-      _either.fold((l) => errorDialogBox(description: l.errorMerrsage),
-          (r) async {
-        SendMessageInFirebase _sendMessageInFirebase =
-            SendMessageInFirebase(_firebaseRepository);
-        final _either = await _sendMessageInFirebase(
-            SendMessageParams(_messageModel, studentClass));
+    _either.fold((l) => errorDialogBox(description: l.errorMerrsage),
+        (r) async {
+      SendMessageInFirebase _sendMessageInFirebase =
+          SendMessageInFirebase(_firebaseRepository);
+      final _either = await _sendMessageInFirebase(
+          SendMessageParams(_messageModel, studentClass));
 
-        _either.fold((l) => errorDialogBox(description: l.errorMerrsage), (r) {
-          Get.toNamed(Routes.BROAD_CAST_VIEW,
-              arguments: [randomString, ClientRole.Broadcaster, studentClass]);
-        });
+      _either.fold((l) => errorDialogBox(description: l.errorMerrsage), (r) {
+        Get.toNamed(Routes.BROAD_CAST_VIEW,
+            arguments: [randomString, ClientRole.Broadcaster, false]);
       });
-    } else {
-      errorDialogBox(
-        description: CAMERA_AND_MICROPHONE,
-      );
-    }
+    });
   }
 
 //? */ ================= Group Call  Function =============##
   void groupCall(
       {@required String classStaderd,
       @required TeacherDetailsModel teacherModel}) async {
-    bool result = await videoCallApi.groupCallDb(
-      className: classStaderd,
-      teacherModel: teacherModel,
-    );
-    if (result) {
-      await Permission.camera.request();
-      await Permission.microphone.request();
-      // ignore: await_only_futures
-      await Get.put(CallController(
-        channelName: classStaderd,
-        isTeacher: true,
-      ));
-      Get.to(() => GroupCall());
-    } else {
-      return;
-    }
+  //   bool result = await videoCallApi.groupCallDb(
+  //     className: classStaderd,
+  //     teacherModel: teacherModel,
+  //   );
+  //   if (result) {
+  //     await Permission.camera.request();
+  //     await Permission.microphone.request();
+  //     // ignore: await_only_futures
+  //     await Get.put(CallController(
+  //       channelName: classStaderd,
+  //       isTeacher: true,
+  //     ));
+  //     Get.to(() => GroupCall());
+  //   } else {
+  //     return;
+  //   }
   }
 
   //? ================ Fetch Messsages ==================//
@@ -224,45 +214,37 @@ class GroupChatScreenController extends GetxController {
 
   //? ================ Live Stram Confrim Function ==================//
   Future<void> liveStreamConfrimForStudent({String channelId}) async {
-    bool camPer = await cameraPermission().isGranted;
-    bool micPer = await microPhonePermission().isGranted;
+    //Add Student in Members List
+    final _either = await _addStudentInStreamList(channelId: channelId);
 
-    if (camPer && micPer) {
-      //Add Student in Members List
-      final _either = await _addStudentInStreamList(channelId: channelId);
-
-      _either.fold(
-        (l) => errorDialogBox(description: l.errorMerrsage),
-        (r) => Get.toNamed(
-          Routes.BROAD_CAST_VIEW,
-          arguments: [
-            channelId,
-            ClientRole.Audience,
-            studentDetailsModel.studentClass
-          ],
-        ),
-      );
-    } else {
-      errorDialogBox(
-        description: CAMERA_AND_MICROPHONE,
-      );
-    }
+    _either.fold(
+      (l) => errorDialogBox(description: l.errorMerrsage),
+      (r) => Get.toNamed(
+        Routes.BROAD_CAST_VIEW,
+        arguments: [channelId, ClientRole.Audience, true],
+      ),
+    );
   }
 
   //? ================ Add Student In Firebase Function ==================//
   Future<Either<AppError, void>> _addStudentInStreamList(
       {String channelId}) async {
+    final _either = await _addStudentInStream(channelName: channelId);
+    return _either.fold(
+        (l) => left(AppError(l.errorMerrsage)), (r) => Right(r));
+  }
+
+  Future<Either<AppError, void>> _addStudentInStream(
+      {String channelName}) async {
     AddStudentInStream _addInStream = AddStudentInStream(_firebaseRepository);
-    final _either = await _addInStream(
+    return await _addInStream(
       AddMemberParam(
-        standerd: channelId,
+        standerd: channelName,
         membersParam: MembersModelEntity(
             name: studentDetailsModel.studentName,
             roll: int.parse(studentDetailsModel.studentRoll),
             profilePic: studentDetailsModel.studentProfileLink),
       ),
     );
-    return _either.fold(
-        (l) => left(AppError(l.errorMerrsage)), (r) => Right(r));
   }
 }

@@ -17,20 +17,21 @@ class GroupCallORchatScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final StudentModelEntity _studentModelEntity = _homeController.studentModel;
     return StreamBuilder(
-        stream: _videocallApi.callStream(_studentModelEntity.studentClass),
-        builder: (context, snapshots) {
-          if (snapshots.hasData && snapshots.data.data() != null) {
-            groupCallModel =
-                VideoCallModel.fromJson(snapshots.data.data()["teacherInfo"]);
+      stream: _videocallApi.callStream(_studentModelEntity.studentClass),
+      builder: (context, snapshots) {
+        if (snapshots.hasData && snapshots.data.data() != null) {
+          groupCallModel =
+              VideoCallModel.fromJson(snapshots.data.data()["teacherInfo"]);
 
-            if (groupCallModel.cutCall == false) {
-              return GroupCallPickerScreen(
-                groupCallModel: groupCallModel,
-                studentDetailsModel: _studentModelEntity,
-              );
-            }
+          if (groupCallModel.cutCall == false) {
+            return GroupCallPickerScreen(
+              groupCallModel: groupCallModel,
+              studentDetailsModel: _studentModelEntity,
+            );
           }
-          return StudentChatScreen();
-        });
+        }
+        return StudentChatScreen();
+      },
+    );
   }
 }

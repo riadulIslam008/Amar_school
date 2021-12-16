@@ -1,3 +1,4 @@
+import 'package:amer_school/App/Core/useCases/Image_Picker.dart';
 import 'package:amer_school/App/Core/utils/Universal_String.dart';
 import 'package:amer_school/App/domain/entites/Message_Model_entity.dart';
 import 'package:amer_school/App/presentation/ClassRouten/Routen.dart';
@@ -102,23 +103,33 @@ class MessageBoxsection extends GetWidget<GroupChatScreenController> {
             mainAxisSize: MainAxisSize.min,
             children: [
               TextButtonWidget(
-                buttonText: "Camera",
-                onclick: () => controller.pickImage(
-                  imageSource: ImageSource.camera,
-                  personName: name,
-                  sectionName: standerd,
-                  personProfileImage: personProfileImage,
-                ),
-              ),
+                  buttonText: "Camera",
+                  onclick: () async {
+                    final _response =
+                        await imagePicker(imageSource: ImageSource.camera);
+
+                    return (_response != null)
+                        ? controller.pickImage(
+                            selectedFile: _response,
+                            personName: name,
+                            sectionName: standerd,
+                            personProfileImage: personProfileImage,
+                          )
+                        : null;
+                  }),
               Divider(thickness: 1, color: Colors.grey),
               TextButtonWidget(
                 buttonText: "Gallery",
-                onclick: () => controller.pickImage(
-                  imageSource: ImageSource.gallery,
-                  personName: name,
-                  sectionName: standerd,
-                  personProfileImage: personProfileImage,
-                ),
+                onclick: () async {
+                  final _response =
+                      await imagePicker(imageSource: ImageSource.gallery);
+                  controller.pickImage(
+                    selectedFile: _response,
+                    personName: name,
+                    sectionName: standerd,
+                    personProfileImage: personProfileImage,
+                  );
+                },
               ),
               Divider(thickness: 1, color: Colors.grey),
               TextButtonWidget(

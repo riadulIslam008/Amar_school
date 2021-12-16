@@ -1,9 +1,13 @@
+import 'package:amer_school/App/Core/useCases/Alert_Message.dart';
+import 'package:amer_school/App/Core/useCases/App_Permission.dart';
+import 'package:amer_school/App/Core/utils/Universal_String.dart';
 import 'package:amer_school/App/presentation/Group_Chat_Screen/Widget/EndDrawer.dart';
 import 'package:amer_school/App/presentation/Group_Chat_Screen/Widget/MessageBoxSection.dart';
 import 'package:amer_school/App/presentation/Group_Chat_Screen/Widget/Message_Layout.dart';
 import 'package:amer_school/App/presentation/Group_Chat_Screen/GroupChatScreenController.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class StudentChatScreen extends GetWidget<GroupChatScreenController> {
   @override
@@ -87,10 +91,15 @@ class StudentChatScreen extends GetWidget<GroupChatScreenController> {
       },
       textConfirm: "Confrim",
       onConfirm: () async {
-        if (controller.channelNameController.text != null)
+        bool camPer = await cameraPermission().isGranted;
+        bool micPer = await microPhonePermission().isGranted;
+        if (controller.channelNameController.text != null && camPer && micPer) {
           controller.liveStreamConfrimForStudent(
             channelId: controller.channelNameController.text,
           );
+        } else {
+          errorDialogBox(description: CAMERA_AND_MICROPHONE);
+        }
       },
     );
   }

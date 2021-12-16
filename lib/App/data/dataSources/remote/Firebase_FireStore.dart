@@ -53,6 +53,10 @@ abstract class FirebaseDatabaseApi {
 
   Stream<List<MembersListModel>> fetchLiveStreamStudentList(
       {@required String channelName});
+
+  Future<void> updateStreamList({String channelName, List membersList});
+
+  Future<void> deleteStreamInstance({String channelName});
 }
 
 //Todo =============== Implemention Class ================ //
@@ -65,11 +69,6 @@ class FirebaseDatabaseApiImpl extends FirebaseDatabaseApi {
   Future<void> addStudentInGroup(
       {String standerd, MembersListModel membersListModel}) async {
     List members = [];
-    // members.add({
-    //   "name": name,
-    //   "roll": roll,
-    //   "profileImage": profilePic,
-    // });
     members.add(membersListModel.toMap());
 
     await _firebaseFirestore
@@ -240,4 +239,21 @@ class FirebaseDatabaseApiImpl extends FirebaseDatabaseApi {
       "members": FieldValue.arrayUnion(_members),
     });
   }
+
+  @override
+  Future<void> updateStreamList({String channelName, List membersList}) async {
+    return await _firebaseFirestore
+        .collection(LIVE_STREAM)
+        .doc(channelName)
+        .update({
+      "members": membersList,
+    });
+  }
+
+  @override
+  Future<void> deleteStreamInstance({String channelName}) async =>
+      await _firebaseFirestore
+          .collection(LIVE_STREAM)
+          .doc(channelName)
+          .delete();
 }

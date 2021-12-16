@@ -1,7 +1,13 @@
 import 'package:agora_rtc_engine/rtc_engine.dart';
+import 'package:amer_school/App/Core/errors/App_Error.dart';
+import 'package:amer_school/App/Core/useCases/Alert_Message.dart';
 import 'package:amer_school/App/domain/entites/Members_Param.dart';
+import 'package:amer_school/App/domain/useCases/Delete_Stream_Instance.dart';
+import 'package:amer_school/App/domain/useCases/Paramitters/Update_Stream_list_Param.dart';
 import 'package:amer_school/App/domain/useCases/Stream_Student_List.dart';
+import 'package:amer_school/App/domain/useCases/Update_Stream_List.dart';
 import 'package:amer_school/MyApp/Utiles/app_id.dart';
+import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -14,6 +20,7 @@ class BroadCastController extends GetxController {
 
   final String channelName = Get.arguments[0];
   final ClientRole role = Get.arguments[1];
+  final bool isStudent = Get.arguments[2];
 
   Rx<List<MembersModelEntity>> _streamStudentList =
       Rxn<List<MembersModelEntity>>();
@@ -25,6 +32,7 @@ class BroadCastController extends GetxController {
   RxBool muted = false.obs;
   final infoStrings = <String>[].obs;
   RxInt streamWacthCounter = 0.obs;
+  int viewStudentIndex = -1;
 
   var scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -33,6 +41,7 @@ class BroadCastController extends GetxController {
     initializeAgora();
     _streamStudentList
         .bindStream(streamStudent(channelNameFromStudent: channelName));
+
     super.onInit();
   }
 
@@ -123,5 +132,34 @@ class BroadCastController extends GetxController {
 
   void endDrawerOpen() {
     scaffoldKey.currentState.openEndDrawer();
+  }
+
+  void removeStudentFromStream() async {
+    if (viewStudentIndex != -1) {
+      streamStudentList.removeAt(viewStudentIndex);
+      await updateStream();
+      Get.back();
+    }
+  }
+
+  Future<Either<AppError, void>> updateStream() async {
+    UpdateStreamList _update = UpdateStreamList(_firebaseRepository);
+    return _update(UpdateStreamListParam(
+        channelId: channelName, membersList: streamStudentList));
+  }
+
+  void deleteStreamChannel() async {
+    final _either = await deleteStream();
+    _either.fold(
+      (l) => errorDialogBox(description: l.errorMerrsage),
+      (r) => Get.back(),
+    );
+  }
+
+  Future<Either<AppError, void>> deleteStream() async {
+    DeleteStreamInstance _deleteStream =
+        DeleteStreamInstance(_firebaseRepository);
+
+    return await _deleteStream(channelName);
   }
 }

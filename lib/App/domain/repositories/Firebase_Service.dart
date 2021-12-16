@@ -9,6 +9,7 @@ import 'package:amer_school/App/domain/useCases/Paramitters/Add_Member_Param.dar
 import 'package:amer_school/App/domain/useCases/Paramitters/AuthParam.dart';
 import 'package:amer_school/App/domain/useCases/Paramitters/Download_File.dart';
 import 'package:amer_school/App/domain/useCases/Paramitters/Send_Message_Params.dart';
+import 'package:amer_school/App/domain/useCases/Paramitters/Update_Stream_list_Param.dart';
 import 'package:amer_school/App/domain/useCases/Paramitters/Upload_File.dart';
 import 'package:amer_school/App/domain/useCases/Paramitters/User_Id.dart';
 import 'package:amer_school/App/domain/entites/Task_SnapShot.dart';
@@ -57,8 +58,13 @@ abstract class FirebaseService {
 
   Future<Either<AppError, void>> createStreamInstance({String channelName});
 
-  Future<Either<AppError, void>> addStudentInStream({AddMemberParam addMemberParam});
+  Future<Either<AppError, void>> addStudentInStream(
+      {AddMemberParam addMemberParam});
 
   Stream<List<MembersModelEntity>> streamStudentList({String channelName});
 
+  Future<Either<AppError, void>> updateStreamList(
+      UpdateStreamListParam updateStreamListParam);
+
+  Future<Either<AppError, void>> deleteStreamInstance({String channelName});
 }

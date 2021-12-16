@@ -1,11 +1,12 @@
+import 'package:amer_school/App/domain/entites/Student_Model_Entity.dart';
 import 'package:amer_school/App/presentation/Class_Live_Broadcast/Broad_Cast_Controller.dart';
+import 'package:amer_school/App/presentation/Home_Section/HomeViewPageController.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-// ignore: must_be_immutable
 class StudentListDrawer extends GetWidget<BroadCastController> {
   final BuildContext context;
-  StudentListDrawer({Key key, this.context}) : super(key: key);
+  const StudentListDrawer({Key key, this.context}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -25,8 +26,9 @@ class StudentListDrawer extends GetWidget<BroadCastController> {
                   SizedBox(width: 20),
                   Icon(Icons.remove_red_eye),
                   SizedBox(width: 10),
-                  Obx(() =>
-                      Text(controller.streamWacthCounter.value.toString()))
+                  Obx(
+                    () => Text(controller.streamWacthCounter.value.toString()),
+                  ),
                 ],
               ),
             ),
@@ -36,8 +38,16 @@ class StudentListDrawer extends GetWidget<BroadCastController> {
                       shrinkWrap: true,
                       itemCount: controller.streamStudentList.length,
                       itemBuilder: (context, index) {
-                        controller.streamWacthCounter.value =
-                            controller.streamStudentList.length;
+                        StudentModelEntity _viewStudentModel =
+                            controller.isStudent
+                                ? Get.find<HomeViewController>().studentModel
+                                : null;
+                        controller.viewStudentIndex = controller.isStudent &&
+                                int.parse(_viewStudentModel.studentRoll) ==
+                                    controller.streamStudentList[index].roll
+                            ? index
+                            : -1;
+                       
                         return Card(
                           color: Colors.grey[800],
                           child: ListTile(
@@ -45,10 +55,11 @@ class StudentListDrawer extends GetWidget<BroadCastController> {
                               radius: 25,
                               backgroundColor:
                                   Colors.transparent.withOpacity(0.9),
-                              backgroundImage: NetworkImage(
-                                  controller.streamStudentList[index].profilePic),
+                              backgroundImage: NetworkImage(controller
+                                  .streamStudentList[index].profilePic),
                             ),
-                            title: Text(controller.streamStudentList[index].name),
+                            title:
+                                Text(controller.streamStudentList[index].name),
                             trailing: Text(
                                 "Roll: ${controller.streamStudentList[index].roll}"),
                           ),

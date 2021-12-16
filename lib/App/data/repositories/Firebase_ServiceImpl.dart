@@ -21,6 +21,7 @@ import 'package:amer_school/App/domain/useCases/Paramitters/Add_Member_Param.dar
 import 'package:amer_school/App/domain/useCases/Paramitters/AuthParam.dart';
 import 'package:amer_school/App/domain/useCases/Paramitters/Download_File.dart';
 import 'package:amer_school/App/domain/useCases/Paramitters/Send_Message_Params.dart';
+import 'package:amer_school/App/domain/useCases/Paramitters/Update_Stream_list_Param.dart';
 import 'package:amer_school/App/domain/useCases/Paramitters/Upload_File.dart';
 import 'package:amer_school/App/data/models/StudentDetailsModel.dart';
 import 'package:amer_school/App/domain/useCases/Paramitters/User_Id.dart';
@@ -238,4 +239,29 @@ class FirebaseServiceImpl extends FirebaseService {
   @override
   Stream<List<MembersModelEntity>> streamStudentList({String channelName}) =>
       _firebaseDatabaseApi.fetchLiveStreamStudentList(channelName: channelName);
+
+  @override
+  Future<Either<AppError, void>> updateStreamList(
+      UpdateStreamListParam updateStreamListParam) async {
+    try {
+      final _response = _firebaseDatabaseApi.updateStreamList(
+          channelName: updateStreamListParam.channelId,
+          membersList: updateStreamListParam.membersList);
+      return Right(_response);
+    } catch (e) {
+      return Left(AppError(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<AppError, void>> deleteStreamInstance(
+      {String channelName}) async {
+    try {
+      final _response = await _firebaseDatabaseApi.deleteStreamInstance(
+          channelName: channelName);
+      return Right(_response);
+    } catch (e) {
+      return Left(AppError(e.toString()));
+    }
+  }
 }
