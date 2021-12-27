@@ -4,7 +4,7 @@ import 'package:agora_rtc_engine/rtc_engine.dart';
 import 'package:agora_rtc_engine/rtc_local_view.dart' as RtcLocalView;
 import 'package:agora_rtc_engine/rtc_remote_view.dart' as RtcRemoteView;
 import 'package:amer_school/App/presentation/Group_Call/Group_Call_Controller.dart';
-import 'package:amer_school/MyApp/Utiles/app_id.dart';
+import 'package:amer_school/App/Core/utils/app_id.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

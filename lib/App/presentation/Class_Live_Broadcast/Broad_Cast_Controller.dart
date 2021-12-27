@@ -6,7 +6,7 @@ import 'package:amer_school/App/domain/useCases/Delete_Stream_Instance.dart';
 import 'package:amer_school/App/domain/useCases/Paramitters/Update_Stream_list_Param.dart';
 import 'package:amer_school/App/domain/useCases/Stream_Student_List.dart';
 import 'package:amer_school/App/domain/useCases/Update_Stream_List.dart';
-import 'package:amer_school/MyApp/Utiles/app_id.dart';
+import 'package:amer_school/App/Core/utils/app_id.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';

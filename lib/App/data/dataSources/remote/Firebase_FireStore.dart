@@ -10,15 +10,11 @@ import 'package:amer_school/App/data/models/MessageModel.dart';
 import 'package:amer_school/App/data/models/StudentDetailsModel.dart';
 import 'package:amer_school/App/data/models/TeacherDetailsModel.dart';
 import 'package:amer_school/App/data/models/VideoFileModel.dart';
-import 'package:amer_school/MyApp/Utiles/UniversalString.dart';
 
 abstract class FirebaseDatabaseApi {
   Future<void> personDetailsSave({@required StudentDetailsModel personInfo});
 
   Future<void> addStudentInGroup({
-    // @required String name,
-    // @required int roll,
-    // @required String profilePic,
     @required MembersListModel membersListModel,
     @required String standerd,
   });
@@ -116,7 +112,7 @@ class FirebaseDatabaseApiImpl extends FirebaseDatabaseApi {
   @override
   Future<void> saveVideoFileInfos(VideoFileModel videoFileModel) async {
     return await _firebaseFirestore
-        .collection(COLLECTION_NAME)
+        .collection(VIDEOS)
         .doc()
         .set(videoFileModel.toJson());
   }
