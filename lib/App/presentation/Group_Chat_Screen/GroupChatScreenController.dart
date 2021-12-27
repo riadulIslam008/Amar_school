@@ -8,10 +8,8 @@ import 'package:amer_school/App/Core/errors/App_Error.dart';
 import 'package:amer_school/App/Core/useCases/Alert_Message.dart';
 import 'package:amer_school/App/Core/useCases/Random_String.dart';
 import 'package:amer_school/App/Core/utils/Universal_String.dart';
-import 'package:amer_school/App/data/models/TeacherDetailsModel.dart';
 
 //? ==================== Models =======================//
-
 import 'package:amer_school/App/domain/entites/Members_Param.dart';
 import 'package:amer_school/App/domain/entites/Message_Model_entity.dart';
 import 'package:amer_school/App/domain/entites/Task_SnapShot.dart';
@@ -21,19 +19,16 @@ import 'package:amer_school/App/domain/useCases/Add_Student_In_Stream.dart';
 import 'package:amer_school/App/domain/useCases/Cereate_Stream_Instance.dart';
 import 'package:amer_school/App/domain/useCases/Fetch_Messages.dart';
 import 'package:amer_school/App/domain/useCases/Fetch_Student_List.dart';
+import 'package:amer_school/App/domain/useCases/Group_Call_Create.dart';
 import 'package:amer_school/App/domain/useCases/Paramitters/Add_Member_Param.dart';
+import 'package:amer_school/App/domain/useCases/Paramitters/GroupCall_Params.dart';
 import 'package:amer_school/App/domain/useCases/Paramitters/Send_Message_Params.dart';
 import 'package:amer_school/App/domain/useCases/Paramitters/Upload_File.dart';
 import 'package:amer_school/App/domain/useCases/Send_Message_In_Firebase.dart';
 import 'package:amer_school/App/domain/useCases/Upload_Image.dart';
 
-//? ==================== Group Call =======================//
-import 'package:amer_school/App/presentation/Group_Call/GroupCall.dart';
-import 'package:amer_school/App/presentation/Group_Call/CallController.dart';
-
 //? ==================== Routes =======================//
 import 'package:amer_school/App/rotues/App_Routes.dart';
-import 'package:amer_school/MyApp/Services/VideoCallApi.dart';
 import 'package:amer_school/App/presentation/Home_Section/HomeViewPageController.dart';
 import 'package:dartz/dartz.dart';
 
@@ -44,8 +39,6 @@ import 'package:get/get.dart';
 class GroupChatScreenController extends GetxController {
   final _firebaseRepository;
   GroupChatScreenController(this._firebaseRepository);
-
-  final VideoCallApi videoCallApi = VideoCallApi();
 
   final studentDetailsModel = Get.find<HomeViewController>().studentModel;
   final teacherInfo = Get.find<HomeViewController>().teacherInfo;
@@ -58,7 +51,6 @@ class GroupChatScreenController extends GetxController {
   final String personType = Get.find<HomeViewController>().person;
   final String sectionName = Get.arguments;
 
-  var scaffoldKey = GlobalKey<ScaffoldState>();
   TextEditingController messageController, channelNameController;
 
   Rx<List<MessageModelEntity>> _messageModel = Rxn<List<MessageModelEntity>>();
@@ -82,11 +74,6 @@ class GroupChatScreenController extends GetxController {
 
   visiable(int index) {
     listBool[index] = !listBool[index];
-  }
-
-  //? */ ============== OpenDrawer =======================##
-  void openDrawer() {
-    scaffoldKey.currentState.openEndDrawer();
   }
 
   //? */ ============== PickImage ====================##
@@ -131,7 +118,6 @@ class GroupChatScreenController extends GetxController {
   }
 
 //? */ ================= Send Message  Function =============##
-
   Future<void> sendMessage(
       {MessageModelEntity messageMap, String standerd}) async {
     SendMessageInFirebase _sendMessageInFirebase =
@@ -180,24 +166,25 @@ class GroupChatScreenController extends GetxController {
 
 //? */ ================= Group Call  Function =============##
   void groupCall(
-      {@required String classStaderd,
-      @required TeacherDetailsModel teacherModel}) async {
-  //   bool result = await videoCallApi.groupCallDb(
-  //     className: classStaderd,
-  //     teacherModel: teacherModel,
-  //   );
-  //   if (result) {
-  //     await Permission.camera.request();
-  //     await Permission.microphone.request();
-  //     // ignore: await_only_futures
-  //     await Get.put(CallController(
-  //       channelName: classStaderd,
-  //       isTeacher: true,
-  //     ));
-  //     Get.to(() => GroupCall());
-  //   } else {
-  //     return;
-  //   }
+      {@required String classStaderd, @required teacherGroupCallModel}) async {
+    final Either<AppError, void> _either =
+        await _createGroupCallInstance(classStaderd, teacherGroupCallModel);
+
+    _either.fold(
+      (l) => errorDialogBox(description: l.errorMerrsage),
+      (r) => Get.toNamed(Routes.GROUP_CALL,
+          arguments: [teacherGroupCallModel.teacherName, sectionName, true]),
+    );
+  }
+
+  Future<Either<AppError, void>> _createGroupCallInstance(
+      String classStaderd, teacherGroupCallModel) async {
+    GroupCallInstance _groupCallInstance =
+        GroupCallInstance(_firebaseRepository);
+
+    GroupCallTeacherParams _groupCallTeacherParam =
+        GroupCallTeacherParams(classStaderd, teacherGroupCallModel);
+    return await _groupCallInstance(_groupCallTeacherParam);
   }
 
   //? ================ Fetch Messsages ==================//
@@ -209,7 +196,11 @@ class GroupChatScreenController extends GetxController {
   //? ================ Fetch Student List ==================//
   Future<void> fetchStudentList({String standerd}) async {
     FetchStudentList _fetchStudentList = FetchStudentList(_firebaseRepository);
-    studentList.value = await _fetchStudentList(standerd: standerd);
+    final _either = await _fetchStudentList(standerd);
+    _either.fold(
+        (l) => errorDialogBox(
+            description: l.errorMerrsage),
+        (r) => studentList.value = r);
   }
 
   //? ================ Live Stram Confrim Function ==================//

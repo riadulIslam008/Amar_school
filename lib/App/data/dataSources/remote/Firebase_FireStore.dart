@@ -1,3 +1,5 @@
+import 'package:amer_school/App/data/models/GroupCall_Model.dart';
+import 'package:amer_school/App/data/models/GroupCall_Teacher_Model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
@@ -57,6 +59,16 @@ abstract class FirebaseDatabaseApi {
   Future<void> updateStreamList({String channelName, List membersList});
 
   Future<void> deleteStreamInstance({String channelName});
+
+  //? =================== Group Call Function ==================== //
+  Future<void> groupCallInstanceCreate(
+      {@required String studentStanderd,
+      GroupCallTeacherModel groupCallTeacherModel});
+
+  Stream<GroupCallTeacherModel> checkGroupCallInstance(
+      {@required String studentStanderd});
+
+  Future<void> deleteGroupCallInstance({@required String studentStanderd});
 }
 
 //Todo =============== Implemention Class ================ //
@@ -194,13 +206,17 @@ class FirebaseDatabaseApiImpl extends FirebaseDatabaseApi {
 
   @override
   Future<List> fetchMembersList({String standerd}) async {
-    final _snapShot =
-        await _firebaseFirestore.collection(GROUPS).doc(standerd).get();
-
-    List _membersList = [];
-
-    _membersList = _snapShot.data()["members"];
-    return _membersList;
+    return await _firebaseFirestore
+        .collection(GROUPS)
+        .doc(standerd)
+        .get()
+        .then((DocumentSnapshot query) {
+      List _membersList = [];
+      query["members"].forEach((studentDetrails) {
+        _membersList.add(MembersListModel.fromMap(studentDetrails));
+      });
+      return _membersList;
+    });
   }
 
   @override
@@ -256,4 +272,37 @@ class FirebaseDatabaseApiImpl extends FirebaseDatabaseApi {
           .collection(LIVE_STREAM)
           .doc(channelName)
           .delete();
+
+  @override
+  Future<void> groupCallInstanceCreate(
+      {String studentStanderd,
+      GroupCallTeacherModel groupCallTeacherModel}) async {
+    final _membersList = [];
+
+    return await _firebaseFirestore
+        .collection(GROUP_CALL_INSTANCE)
+        .doc(studentStanderd)
+        .set({
+      "teacherInfo": groupCallTeacherModel.toMap(),
+      "membersList": _membersList,
+    });
+  }
+
+  @override
+  Stream<GroupCallTeacherModel> checkGroupCallInstance(
+      {String studentStanderd}) {
+    return _firebaseFirestore
+        .collection(GROUP_CALL_INSTANCE)
+        .doc(studentStanderd)
+        .snapshots()
+        .map((event) => GroupCallModel.fromMap(event.data()).teacherInfo);
+  }
+
+  @override
+  Future<void> deleteGroupCallInstance({String studentStanderd}) async {
+    return await _firebaseFirestore
+        .collection(GROUP_CALL_INSTANCE)
+        .doc(studentStanderd)
+        .delete();
+  }
 }

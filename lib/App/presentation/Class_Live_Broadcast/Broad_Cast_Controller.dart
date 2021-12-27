@@ -34,8 +34,6 @@ class BroadCastController extends GetxController {
   RxInt streamWacthCounter = 0.obs;
   int viewStudentIndex = -1;
 
-  var scaffoldKey = GlobalKey<ScaffoldState>();
-
   @override
   void onInit() {
     initializeAgora();
@@ -128,10 +126,6 @@ class BroadCastController extends GetxController {
     StreamStudentList _streamStudentList =
         StreamStudentList(_firebaseRepository);
     return _streamStudentList(channelName: channelName);
-  }
-
-  void endDrawerOpen() {
-    scaffoldKey.currentState.openEndDrawer();
   }
 
   void removeStudentFromStream() async {

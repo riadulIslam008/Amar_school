@@ -1,3 +1,4 @@
+import 'package:amer_school/App/Core/useCases/Global_Key.dart';
 import 'package:amer_school/App/presentation/Class_Live_Broadcast/Broad_Cast_Controller.dart';
 import 'package:amer_school/App/presentation/Class_Live_Broadcast/Widgets/End_Drawer.dart';
 import 'package:amer_school/App/presentation/Class_Live_Broadcast/Widgets/ToolBar_Section.dart';
@@ -45,7 +46,7 @@ class BroadCastview extends GetWidget<BroadCastController> {
           alignment: Alignment.topRight,
           children: [
             IconButton(
-              onPressed: () => controller.endDrawerOpen(),
+              onPressed: () =>  scaffoldKey.currentState.openEndDrawer(),
               icon: Icon(Icons.people),
             ),
             CircleAvatar(

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:isolate';
 import 'dart:ui';
 
@@ -7,13 +8,17 @@ import 'package:amer_school/App/Core/useCases/Alert_Message.dart';
 
 //? ============ String ===================//
 import 'package:amer_school/App/Core/utils/Universal_String.dart';
+import 'package:amer_school/App/domain/entites/GroupCall_Teacher_Model_Entity.dart';
 
 //? ============ Student Model ================//
 import 'package:amer_school/App/domain/entites/Student_Model_Entity.dart';
+
 //? ============ Teacher Model ================//
 import 'package:amer_school/App/domain/entites/Teacher_Model_Entity.dart';
+
 //? ============ Use Cases ================//
 import 'package:amer_school/App/domain/entites/Video_File_Entity.dart';
+import 'package:amer_school/App/domain/useCases/Check_Group_Call.dart';
 import 'package:amer_school/App/domain/useCases/Fetch_Student_Data.dart';
 import 'package:amer_school/App/domain/useCases/Fetch_Teacher_Data.dart';
 import 'package:amer_school/App/domain/useCases/Flutter_Video_Download.dart';
@@ -26,7 +31,6 @@ import 'package:flutter_downloader/flutter_downloader.dart';
 
 //? ============ Routes ================//
 import 'package:amer_school/App/rotues/App_Routes.dart';
-import 'package:amer_school/MyApp/Utiles/UniversalString.dart';
 
 //? ============= Packages =============//
 import 'package:dartz/dartz.dart';
@@ -49,29 +53,19 @@ class HomeViewController extends GetxController {
 
   RxString personProfile = "".obs;
 
-  Rxn<List<VideoFileEntity>> _videoFile = Rxn<List<VideoFileEntity>>();
-  List<VideoFileEntity> get videosInfo => _videoFile.value;
-
   @override
   void onInit() {
-    _videoFile.bindStream(fetchVideoCollection());
     IsolateNameServer.registerPortWithName(
         _receivePort.sendPort, "donwloadingVideo");
     FlutterDownloader.registerCallback(downloaderCallback);
-    _receivePort.listen((message) {
-    //  print(message);
-    });
+    _receivePort.listen((message) {});
     initialFunction();
     super.onInit();
   }
 
-  initialFunction() async {
-    person = await _getStorage.read(PERSON_TYPES);
-    stdentORteacherCheck() ? studentInit() : teacherInit();
-  }
-
-  bool stdentORteacherCheck() {
-    return person == STUDENT ? true : false;
+  void initialFunction() {
+    final person = _getStorage.read(PERSON_TYPES);
+    person == STUDENT ? studentInit() : teacherInit();
   }
 
   //Todo ========= Student View ===============##
@@ -89,13 +83,9 @@ class HomeViewController extends GetxController {
     });
   }
 
-  messangerIconPressed() {
-    Get.toNamed(Routes.STUDENT_CHAT, arguments: studentModel.studentClass);
-  }
-
 //Todo ================= Teacher View ================
   void teacherInit() async {
-    userUid = await _getStorage.read(teacherUid);
+    userUid = await _getStorage.read(TEACHER_UID);
 
     FetchTeacherData _fetchTeacherData = FetchTeacherData(_firebaseRepository);
     final Either<AppError, TeacherModelEntity> _data =
@@ -133,9 +123,21 @@ class HomeViewController extends GetxController {
   }
 
   //Todo ============== Fetch Stream as QuerySnapshots ==========##
-
   fetchVideoCollection() {
     VideoFileInfo _videoFileInfo = VideoFileInfo(_firebaseRepository);
     return _videoFileInfo();
+  }
+
+  //?? ================ Group Call Instance Check ================= //
+  Stream<GroupCallTeacherModelEntity> checkTeacherGroupCall() {
+    final section = _getStorage.read(STUDENT_SECTION);
+
+    CheckGroupCall _checkGroupCall = CheckGroupCall(_firebaseRepository);
+    return _checkGroupCall(standerd: section);
+  }
+
+  void groupCallPage(teacherName){
+     final section = _getStorage.read(STUDENT_SECTION);
+     Get.toNamed(Routes.GROUP_CALL, arguments: [teacherName, section, false]);
   }
 }

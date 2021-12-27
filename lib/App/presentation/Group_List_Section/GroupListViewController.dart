@@ -9,7 +9,6 @@ import 'package:amer_school/App/domain/useCases/Create_Group.dart';
 
 //? =========== Fetch Group list Class ===== //
 import 'package:amer_school/App/domain/useCases/Fetch_Group_List.dart';
-import 'package:amer_school/App/presentation/DropDown_Section/DropDown_Controller.dart';
 
 //? ========== packages =========== //
 import 'package:flutter/material.dart';
@@ -18,17 +17,17 @@ import 'package:get/get.dart';
 class GroupListViewController extends GetxController {
   final _firebaseRepository;
 
- final String studentSection = Get.find<DropDownController>().fristItemClassListVariable;
-  List groupList = [];
+ //final String studentSection = Get.find<DropDownController>().fristItemClassListVariable;
+  
 
-  Rxn<List<GroupModelEntity>> _grounModelEntity = Rxn<List<GroupModelEntity>>();
-  List<GroupModelEntity> get groupModelEntity => _grounModelEntity.value;
+  // Rxn<List<GroupModelEntity>> _grounModelEntity = Rxn<List<GroupModelEntity>>();
+  // List<GroupModelEntity> get groupModelEntity => _grounModelEntity.value;
 
   GroupListViewController(this._firebaseRepository);
 
   @override
   void onInit() {
-    _grounModelEntity.bindStream(fetchGroupList());
+   // _grounModelEntity.bindStream(fetchGroupList());
     super.onInit();
   }
 
@@ -41,7 +40,7 @@ class GroupListViewController extends GetxController {
     final _either = await _createGroup(_groupModelEntity);
 
     _either.fold((l) => errorDialogBox(description: l.toString()),
-        (r) => fetchGroupList());
+        (r) => null);
   }
 
   fetchGroupList() {

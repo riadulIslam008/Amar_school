@@ -1,31 +1,46 @@
 import 'dart:io';
-
+  //** =========== Core Error and String */
 import 'package:amer_school/App/Core/errors/App_Error.dart';
+import 'package:amer_school/App/Core/errors/Firebase_Exception_Errors.dart';
+import 'package:amer_school/App/Core/utils/Universal_String.dart';
+
+//** =========== From Data Sources ============  */
 import 'package:amer_school/App/data/dataSources/remote/Firebase_Auth.dart';
 import 'package:amer_school/App/data/dataSources/remote/Firebase_FireStore.dart';
 import 'package:amer_school/App/data/dataSources/remote/Firebase_Storage.dart';
 import 'package:amer_school/App/data/dataSources/remote/Flutter_Downloader.dart';
+
+//** =============== Models ================= */
+import 'package:amer_school/App/data/models/GroupCall_Teacher_Model.dart';
 import 'package:amer_school/App/data/models/Group_Model.dart';
 import 'package:amer_school/App/data/models/Members_List_Model.dart';
 import 'package:amer_school/App/data/models/MessageModel.dart';
 import 'package:amer_school/App/data/models/TeacherDetailsModel.dart';
 import 'package:amer_school/App/data/models/VideoFileModel.dart';
+import 'package:amer_school/App/data/models/StudentDetailsModel.dart';
+
+//** =============== Model Entity ==================== */
+import 'package:amer_school/App/domain/entites/GroupCall_Teacher_Model_Entity.dart';
 import 'package:amer_school/App/domain/entites/Group_List_Model_Entity.dart';
 import 'package:amer_school/App/domain/entites/Members_Param.dart';
 import 'package:amer_school/App/domain/entites/Message_Model_entity.dart';
 import 'package:amer_school/App/domain/entites/Student_Model_Entity.dart';
 import 'package:amer_school/App/domain/entites/Teacher_Model_Entity.dart';
+import 'package:amer_school/App/domain/entites/Task_SnapShot.dart';
 import 'package:amer_school/App/domain/entites/Video_File_Entity.dart';
-import 'package:amer_school/App/domain/repositories/Firebase_Service.dart';
+
+ //** ============= Use Case Param ================== */
 import 'package:amer_school/App/domain/useCases/Paramitters/Add_Member_Param.dart';
 import 'package:amer_school/App/domain/useCases/Paramitters/AuthParam.dart';
 import 'package:amer_school/App/domain/useCases/Paramitters/Download_File.dart';
+import 'package:amer_school/App/domain/useCases/Paramitters/GroupCall_Params.dart';
 import 'package:amer_school/App/domain/useCases/Paramitters/Send_Message_Params.dart';
 import 'package:amer_school/App/domain/useCases/Paramitters/Update_Stream_list_Param.dart';
 import 'package:amer_school/App/domain/useCases/Paramitters/Upload_File.dart';
-import 'package:amer_school/App/data/models/StudentDetailsModel.dart';
 import 'package:amer_school/App/domain/useCases/Paramitters/User_Id.dart';
-import 'package:amer_school/App/domain/entites/Task_SnapShot.dart';
+
+import 'package:amer_school/App/domain/repositories/Firebase_Service.dart';
+//?? ========== Packages ===========
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
@@ -46,8 +61,10 @@ class FirebaseServiceImpl extends FirebaseService {
           email: authParam.userName, password: authParam.userPassword);
 
       return Right(response.user.uid);
-    } catch (e) {
-      return Left(AppError(e.toString()));
+    } on SocketException {
+      return Left(AppError(INTERNET_ERROR_MESSAGE));
+    } on FirebaseException catch (e) {
+      return Left(AppError(firebaseError(e)));
     }
   }
 
@@ -59,7 +76,9 @@ class FirebaseServiceImpl extends FirebaseService {
           email: authParam.userName, password: authParam.userPassword);
 
       return Right(response.user.uid);
-    } catch (e) {
+    } on SocketException {
+      return Left(AppError(INTERNET_ERROR_MESSAGE));
+    } on Exception catch (e) {
       return Left(AppError(e.toString()));
     }
   }
@@ -73,7 +92,9 @@ class FirebaseServiceImpl extends FirebaseService {
           destination: uploadParam.destination,
           imageFile: uploadParam.imageFile);
       return Right(response);
-    } catch (e) {
+    } on SocketException {
+      return Left(AppError(INTERNET_ERROR_MESSAGE));
+    } on Exception catch (e) {
       return Left(AppError(e.toString()));
     }
   }
@@ -89,7 +110,9 @@ class FirebaseServiceImpl extends FirebaseService {
       );
 
       return Right(response);
-    } catch (e) {
+    } on SocketException {
+      return Left(AppError(INTERNET_ERROR_MESSAGE));
+    } on Exception catch (e) {
       return Left(AppError(e.toString()));
     }
   }
@@ -102,7 +125,9 @@ class FirebaseServiceImpl extends FirebaseService {
           personInfo: StudentDetailsModel.fromJsonStudentModelEntity(
               studentModelEntity));
       return Right(response);
-    } catch (e) {
+    } on SocketException {
+      return Left(AppError(INTERNET_ERROR_MESSAGE));
+    } on Exception catch (e) {
       return Left(AppError(e.toString()));
     }
   }
@@ -114,7 +139,9 @@ class FirebaseServiceImpl extends FirebaseService {
       final response =
           await _firebaseDatabaseApi.fetchStudentData(userid: useruid.userid);
       return Right(response);
-    } catch (e) {
+    } on SocketException {
+      return Left(AppError(INTERNET_ERROR_MESSAGE));
+    } on Exception catch (e) {
       return Left(AppError(e.toString()));
     }
   }
@@ -126,7 +153,9 @@ class FirebaseServiceImpl extends FirebaseService {
       final response = await _firebaseDatabaseApi.fetchTeacherDetailsModel(
           userid: useruid.userid);
       return Right(response);
-    } catch (e) {
+    } on SocketException {
+      return Left(AppError(INTERNET_ERROR_MESSAGE));
+    } on Exception catch (e) {
       return Left(AppError(e.toString()));
     }
   }
@@ -139,7 +168,9 @@ class FirebaseServiceImpl extends FirebaseService {
           videoUrl: downloadFileParam.videoUrl,
           fileName: downloadFileParam.fileName);
       return Right(response);
-    } catch (e) {
+    } on SocketException {
+      return Left(AppError(INTERNET_ERROR_MESSAGE));
+    } on Exception catch (e) {
       return Left(AppError(e.toString()));
     }
   }
@@ -152,7 +183,9 @@ class FirebaseServiceImpl extends FirebaseService {
           VideoFileModel.fromVideoFileEntity(videoFileEntity));
 
       return Right(response);
-    } catch (e) {
+    } on SocketException {
+      return Left(AppError(INTERNET_ERROR_MESSAGE));
+    } on Exception catch (e) {
       return Left(AppError(e.toString()));
     }
   }
@@ -193,18 +226,35 @@ class FirebaseServiceImpl extends FirebaseService {
           studentStanderd: sendMessageParams.studentStanderd);
 
       return Right(response);
-    } catch (e) {
+    } on SocketException {
+      return Left(AppError(INTERNET_ERROR_MESSAGE));
+    } on Exception catch (e) {
       return Left(AppError(e.toString()));
     }
   }
 
   @override
-  Future<List<TeacherModelEntity>> fetchTeacherList() async =>
-      await _firebaseDatabaseApi.fetchTeacherList();
+  Future<Either<AppError, List<TeacherModelEntity>>> fetchTeacherList() async {
+    try {
+      return Right(await _firebaseDatabaseApi.fetchTeacherList());
+    } on SocketException {
+      return Left(AppError(INTERNET_ERROR_MESSAGE));
+    } on Exception catch (e) {
+      return Left(AppError(e.toString()));
+    }
+  }
 
   @override
-  Future<List> fetchStudentList({String standerd}) async =>
-      await _firebaseDatabaseApi.fetchMembersList(standerd: standerd);
+  Future<Either<AppError, List>> fetchStudentList({String standerd}) async {
+    try {
+      return Right(
+          await _firebaseDatabaseApi.fetchMembersList(standerd: standerd));
+    } on SocketException {
+      return Left(AppError(INTERNET_ERROR_MESSAGE));
+    } on Exception catch (e) {
+      return Left(AppError(e.toString()));
+    }
+  }
 
   @override
   Future<Either<AppError, void>> createStreamInstance(
@@ -213,7 +263,9 @@ class FirebaseServiceImpl extends FirebaseService {
       final snapShot = await _firebaseDatabaseApi.createStreamCallInstance(
           channelName: channelName);
       return Right(snapShot);
-    } catch (e) {
+    } on SocketException {
+      return Left(AppError(INTERNET_ERROR_MESSAGE));
+    } on Exception catch (e) {
       return Left(AppError(e.toString()));
     }
   }
@@ -260,7 +312,45 @@ class FirebaseServiceImpl extends FirebaseService {
       final _response = await _firebaseDatabaseApi.deleteStreamInstance(
           channelName: channelName);
       return Right(_response);
-    } catch (e) {
+    } on SocketException {
+      return Left(AppError(INTERNET_ERROR_MESSAGE));
+    } on Exception catch (e) {
+      return Left(AppError(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<AppError, void>> createGroupCallInstance(
+      GroupCallTeacherParams groupCallParams) async {
+    try {
+      final _response = await _firebaseDatabaseApi.groupCallInstanceCreate(
+          studentStanderd: groupCallParams.studentStanderd,
+          groupCallTeacherModel: GroupCallTeacherModel.fromTeacherEntity(
+              groupCallParams.groupCallTeacherModelEntity));
+      return Right(_response);
+    } on SocketException {
+      return Left(AppError(INTERNET_ERROR_MESSAGE));
+    } on Exception catch (e) {
+      return Left(AppError(e.toString()));
+    }
+  }
+
+  @override
+  Stream<GroupCallTeacherModelEntity> cheackGroupCall(
+          {String studentStanderd}) =>
+      _firebaseDatabaseApi.checkGroupCallInstance(
+          studentStanderd: studentStanderd);
+
+  @override
+  Future<Either<AppError, void>> deleteGroupCall(
+      {String studentStanderd}) async {
+    try {
+      final _response = await _firebaseDatabaseApi.deleteGroupCallInstance(
+          studentStanderd: studentStanderd);
+      return Right(_response);
+    } on SocketException {
+      return Left(AppError(INTERNET_ERROR_MESSAGE));
+    } on Exception catch (e) {
       return Left(AppError(e.toString()));
     }
   }

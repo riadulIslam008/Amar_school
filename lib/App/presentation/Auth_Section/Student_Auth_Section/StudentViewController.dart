@@ -30,21 +30,18 @@ import 'package:amer_school/App/domain/useCases/Person_Data_Save.dart';
 import 'package:amer_school/App/domain/useCases/Upload_Image.dart';
 import 'package:amer_school/App/presentation/DropDown_Section/DropDown_Controller.dart';
 
-//? ======== Home Page View ==========
-import 'package:amer_school/App/presentation/Home_Section/HomePageView.dart';
-
 //? ============ Circular Progress Indication ========
 import 'package:amer_school/App/Core/widgets/CircularPage.dart';
 
 //? =============== Auth/Student Login Page ==========
 import 'package:amer_school/App/presentation/Auth_Section/Student_Auth_Section/studentLogin.dart';
 import 'package:amer_school/App/domain/entites/Task_SnapShot.dart';
+import 'package:amer_school/App/rotues/App_Routes.dart';
 
 //? ============== Packages ========
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:image_picker/image_picker.dart';
 
 class StudentViewController extends GetxController {
   final _firebaseServices;
@@ -69,12 +66,12 @@ class StudentViewController extends GetxController {
   }
 
   RxString standerd = "".obs;
-  RxString profileImage = "".obs;
 
-  signIN() async {
+  void signIN() async {
     Get.to(() => CircularPage(), transition: Transition.zoom);
-    final String email =
-        makeValidateEmail(fullNameController.text, rollController.text);
+    final String studentSection = _studentSectionReturn();
+    final String email = makeValidateEmail(fullNameController.text,
+        rollController.text,  studentSection.replaceAll(" ", "").toLowerCase());
 
     FirebaseSignIn firebasesignin = FirebaseSignIn(_firebaseServices);
     final Either<AppError, String> _credentail =
@@ -86,33 +83,33 @@ class StudentViewController extends GetxController {
     }, (r) {
       _getStorage.write(STUDENT_UID, "$r");
       _getStorage.write(PERSON_TYPES, STUDENT);
-      Get.offAll(() => HomePageView(isTeacher: false));
+
+      //for group call check
+
+      _getStorage.write(STUDENT_SECTION, studentSection);
+
+      Get.offAndToNamed(Routes.HomeView, arguments: [false]);
     });
   }
 
 //Todo ===========  SignUp ======================//
   signUP() async {
-    if (imageFile == null) {
-      Get.back();
-      return errorDialogBox(description: FILE_IMAGE_ERROR_MESSAGE);
-    }
-    final String studentSection =
-        Get.find<DropDownController>().fristItemClassListVariable;
+    final String studentSection = _studentSectionReturn();
 
     Get.off(() => CircularPage(), transition: Transition.zoom);
     standerd.value = studentSection;
 
-    final String email =
-        makeValidateEmail(passwordController.text, rollController.text);
+    final String email = makeValidateEmail(fullNameController.text,
+        rollController.text, studentSection.replaceAll(" ", "").toLowerCase());
 
     final String destination = "$studentSection/${fullNameController.text}";
 
     final Either<AppError, String> _credential =
-        await signupFirebase(email: email);
+        await _signupFirebase(email: email);
     _credential.fold((l) => errorDialogBox(description: l.errorMerrsage),
         (userUid) async {
       final Either<AppError, String> imageUrl =
-          await uploadImage(destination: destination);
+          await _uploadImage(destination: destination);
       imageUrl.fold((l) => errorDialogBox(description: IMAGE_ERROR_MESSAGE),
           (imageLink) async {
         StudentModelEntity studentInfos = StudentModelEntity(
@@ -124,7 +121,7 @@ class StudentViewController extends GetxController {
         );
 
         final Either<AppError, void> _either =
-            await saveStudentDataInFirebase(studentModelEntity: studentInfos);
+            await _saveStudentDataInFirebase(studentModelEntity: studentInfos);
 
         _either.fold((l) => errorDialogBox(description: l.errorMerrsage),
             (r) async {
@@ -135,17 +132,21 @@ class StudentViewController extends GetxController {
           );
 
           final _addedInGroup =
-              await addStudentInTheirGroup(membersModelEntity: _membersModel);
+              await _addStudentInTheirGroup(membersModelEntity: _membersModel);
 
           _addedInGroup
               .fold((l) => errorDialogBox(description: l.errorMerrsage), (r) {
             clearController();
             Get.off(() => StudentLogin());
-            successfulSnackBar("Sign UP successfully", "please login here");
+            successfulSnackBar("Sign UP Completed", "Please login here");
           });
         });
       });
     });
+  }
+
+  String _studentSectionReturn() {
+    return Get.find<DropDownController>().fristItemClassListVariable;
   }
 
   clearController() {
@@ -153,19 +154,6 @@ class StudentViewController extends GetxController {
     rollController.clear();
     passwordController.clear();
     confrimPasswordController.clear();
-  }
-
-  //Todo ================== Pick Image =====================##
-  Future<void> pickImage({@required ImageSource imageSource}) async {
-    XFile _response = await ImagePicker().pickImage(source: imageSource);
-    if (_response != null) {
-      file.value = _response.path;
-      imageFile = File(file.value);
-
-      Get.back();
-    } else {
-      return;
-    }
   }
 
   @override
@@ -177,7 +165,8 @@ class StudentViewController extends GetxController {
     super.onClose();
   }
 
-  Future<Either<AppError, String>> signupFirebase({String email}) async {
+//?? ===================== SIGN UP FIREBASE =============== //
+  Future<Either<AppError, String>> _signupFirebase({String email}) async {
     FirebaseSignUp _firebaseSignUp = FirebaseSignUp(_firebaseServices);
     final Either<AppError, String> _credential =
         await _firebaseSignUp(AuthParam(email, passwordController.text));
@@ -186,7 +175,8 @@ class StudentViewController extends GetxController {
         (l) => Left(AppError(l.errorMerrsage)), (r) => Right(r));
   }
 
-  Future<Either<AppError, String>> uploadImage({String destination}) async {
+//?? ===================== UPLOAD IMAGE =============== //
+  Future<Either<AppError, String>> _uploadImage({String destination}) async {
     UploadFile _uploadImage = UploadFile(_firebaseServices);
     final Either<AppError, TaskSnap> _imageUrl =
         await _uploadImage(UploadParam(destination, imageFile, IMAGES));
@@ -199,7 +189,8 @@ class StudentViewController extends GetxController {
     );
   }
 
-  Future<Either<AppError, void>> saveStudentDataInFirebase(
+//?? ===================== SAVE DATA IN FIREBASE ===============//
+  Future<Either<AppError, void>> _saveStudentDataInFirebase(
       {StudentModelEntity studentModelEntity}) async {
     PersonDataSave personDataSave = PersonDataSave(_firebaseServices);
     final _response = await personDataSave(studentModelEntity);
@@ -208,7 +199,8 @@ class StudentViewController extends GetxController {
         (l) => Left(AppError(l.errorMerrsage)), (r) => Right(r));
   }
 
-  Future<Either<AppError, void>> addStudentInTheirGroup(
+//?? ===================== ADD STUDENT IN CLASS GROUP ===============//
+  Future<Either<AppError, void>> _addStudentInTheirGroup(
       {MembersModelEntity membersModelEntity}) async {
     AddInGroup addInGroup = AddInGroup(_firebaseServices);
     final _response = await addInGroup(AddMemberParam(

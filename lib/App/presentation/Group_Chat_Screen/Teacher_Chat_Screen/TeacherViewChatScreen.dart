@@ -1,6 +1,7 @@
 //?? ============== End Drawer ================= */
 import 'package:amer_school/App/Core/useCases/Alert_Message.dart';
 import 'package:amer_school/App/Core/useCases/App_Permission.dart';
+import 'package:amer_school/App/Core/useCases/Global_Key.dart';
 import 'package:amer_school/App/Core/utils/Universal_String.dart';
 import 'package:amer_school/App/presentation/Group_Chat_Screen/Widget/EndDrawer.dart';
 
@@ -26,7 +27,7 @@ class TeacherViewChatScreen extends GetWidget<GroupChatScreenController> {
         //*
         //*
         //*
-        key: controller.scaffoldKey,
+        key: scaffoldKey,
         appBar: appBar(),
         //
         //Todo ─── BODY ────────────────────────────────────────────────────────
@@ -91,7 +92,7 @@ class TeacherViewChatScreen extends GetWidget<GroupChatScreenController> {
         ),
         SizedBox(width: 10),
         IconButton(
-          onPressed: () => controller.scaffoldKey.currentState.openEndDrawer(),
+          onPressed: () => scaffoldKey.currentState.openEndDrawer(),
           icon: Icon(Icons.people_outline),
           tooltip: "Group members",
         ),

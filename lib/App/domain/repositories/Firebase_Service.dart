@@ -1,4 +1,5 @@
 import 'package:amer_school/App/Core/errors/App_Error.dart';
+import 'package:amer_school/App/domain/entites/GroupCall_Teacher_Model_Entity.dart';
 import 'package:amer_school/App/domain/entites/Group_List_Model_Entity.dart';
 import 'package:amer_school/App/domain/entites/Members_Param.dart';
 import 'package:amer_school/App/domain/entites/Message_Model_entity.dart';
@@ -8,6 +9,7 @@ import 'package:amer_school/App/domain/entites/Video_File_Entity.dart';
 import 'package:amer_school/App/domain/useCases/Paramitters/Add_Member_Param.dart';
 import 'package:amer_school/App/domain/useCases/Paramitters/AuthParam.dart';
 import 'package:amer_school/App/domain/useCases/Paramitters/Download_File.dart';
+import 'package:amer_school/App/domain/useCases/Paramitters/GroupCall_Params.dart';
 import 'package:amer_school/App/domain/useCases/Paramitters/Send_Message_Params.dart';
 import 'package:amer_school/App/domain/useCases/Paramitters/Update_Stream_list_Param.dart';
 import 'package:amer_school/App/domain/useCases/Paramitters/Upload_File.dart';
@@ -52,9 +54,9 @@ abstract class FirebaseService {
 
   Stream<List<MessageModelEntity>> fetchMessageModel({String standerd});
 
-  Future<List<TeacherModelEntity>> fetchTeacherList();
+  Future<Either<AppError, List<TeacherModelEntity>>> fetchTeacherList();
 
-  Future<List> fetchStudentList({String standerd});
+  Future<Either<AppError, List>> fetchStudentList({String standerd});
 
   Future<Either<AppError, void>> createStreamInstance({String channelName});
 
@@ -67,4 +69,12 @@ abstract class FirebaseService {
       UpdateStreamListParam updateStreamListParam);
 
   Future<Either<AppError, void>> deleteStreamInstance({String channelName});
+
+  //Group CAll Instance
+  Future<Either<AppError, void>> createGroupCallInstance(
+      GroupCallTeacherParams groupCallParams);
+
+  Stream<GroupCallTeacherModelEntity> cheackGroupCall({String studentStanderd});
+
+  Future<Either<AppError, void>> deleteGroupCall({String studentStanderd});
 }

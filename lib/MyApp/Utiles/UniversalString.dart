@@ -2,7 +2,7 @@ const String COLLECTION_NAME = "videos";
 final String teacherCollection = "teachers";
 final String studentCollection = "student";
 final String studentUid = "studentUid";
-final String teacherUid = "teacherUid";
+
 const String GROUP_CHAT = "groupchats";
 const String CHAT = "chats";
 const String PERSON_TYPE = "STUDENT";

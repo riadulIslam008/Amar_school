@@ -1,3 +1,3 @@
-makeValidateEmail(String fullName, String rollNumber){
-  return "${fullName.replaceAll(RegExp(" "), "").toLowerCase()}$rollNumber@gmail.com";
+makeValidateEmail(String fullName, String rollNumber, String studentSection){
+  return "${fullName.replaceAll(RegExp(" "), "").toLowerCase()}$rollNumber$studentSection@gmail.com";
 }

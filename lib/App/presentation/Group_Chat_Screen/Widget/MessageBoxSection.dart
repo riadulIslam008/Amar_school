@@ -1,7 +1,6 @@
 import 'package:amer_school/App/Core/useCases/Image_Picker.dart';
 import 'package:amer_school/App/Core/utils/Universal_String.dart';
 import 'package:amer_school/App/domain/entites/Message_Model_entity.dart';
-import 'package:amer_school/App/presentation/ClassRouten/Routen.dart';
 import 'package:amer_school/App/presentation/Group_Chat_Screen/Widget/TextButtonWidget.dart';
 import 'package:amer_school/App/presentation/Group_Chat_Screen/GroupChatScreenController.dart';
 import 'package:flutter/material.dart';
@@ -129,13 +128,6 @@ class MessageBoxsection extends GetWidget<GroupChatScreenController> {
                     sectionName: standerd,
                     personProfileImage: personProfileImage,
                   );
-                },
-              ),
-              Divider(thickness: 1, color: Colors.grey),
-              TextButtonWidget(
-                buttonText: "Class Routen",
-                onclick: () {
-                  Get.to(Routen(isTeacher: isTeacher));
                 },
               ),
             ],

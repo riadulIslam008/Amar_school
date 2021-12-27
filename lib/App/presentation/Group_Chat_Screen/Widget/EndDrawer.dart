@@ -1,7 +1,11 @@
+import 'package:amer_school/App/Core/useCases/App_Permission.dart';
+import 'package:amer_school/App/domain/entites/GroupCall_Teacher_Model_Entity.dart';
 import 'package:amer_school/App/presentation/Group_Chat_Screen/GroupChatScreenController.dart';
 import 'package:amer_school/App/data/models/TeacherDetailsModel.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:permission_handler_platform_interface/permission_handler_platform_interface.dart';
 
 // ignore: must_be_immutable
 class EndDrawer extends GetWidget<GroupChatScreenController> {
@@ -43,10 +47,21 @@ class EndDrawer extends GetWidget<GroupChatScreenController> {
             trailing: isStudent
                 ? Icon(null)
                 : IconButton(
-                    onPressed: () => controller.groupCall(
-                      classStaderd: classStanderd,
-                      teacherModel: teacherModel,
-                    ),
+                    onPressed: () async {
+                      final PermissionStatus _camPer = await cameraPermission();
+                      final PermissionStatus _microPer =
+                          await microPhonePermission();
+
+                      if (_camPer.isGranted && _microPer.isGranted) {
+                        controller.groupCall(
+                          classStaderd: classStanderd,
+                          teacherGroupCallModel: GroupCallTeacherModelEntity(
+                            teacherModel.teacherName,
+                            teacherModel.teacherProfileLink,
+                          ),
+                        );
+                      }
+                    },
                     icon: Icon(Icons.video_call),
                   ),
           ),
@@ -65,19 +80,18 @@ class EndDrawer extends GetWidget<GroupChatScreenController> {
                         leading: CircleAvatar(
                           radius: 25,
                           backgroundColor: Colors.grey,
-                          backgroundImage: NetworkImage(
-                            controller.studentList[index]["profileImage"],
-                          ),
+                          backgroundImage: CachedNetworkImageProvider(
+                              controller.studentList[index].profilePic),
                         ),
                         title: Text(
-                          "${controller.studentList[index]["name"]}"
+                          "${controller.studentList[index].name}"
                               .capitalizeFirst,
                           style: TextStyle(
                             color: Colors.grey,
                           ),
                         ),
                         subtitle: Text(
-                          "Roll: ${controller.studentList[index]["roll"]}",
+                          "Roll: ${controller.studentList[index].roll}",
                           style: TextStyle(
                             color: Colors.white,
                           ),

@@ -1,16 +1,18 @@
 import 'dart:io';
 
+import 'package:amer_school/App/Core/useCases/Alert_Message.dart';
+import 'package:amer_school/App/Core/utils/Universal_String.dart';
 import 'package:amer_school/App/presentation/DropDown_Section/DropDown_Section.dart';
 import 'package:amer_school/App/presentation/Group_Chat_Screen/Widget/TextButtonWidget.dart';
 import 'package:amer_school/App/presentation/Upload_FIle_Section/Widgets/TextFieldWidget.dart';
-import 'package:amer_school/App/presentation/Auth_Section/Student_Auth_Section/studentLogin.dart';
 import 'package:amer_school/App/presentation/Auth_Section/Student_Auth_Section/StudentViewController.dart';
+import 'package:amer_school/App/rotues/App_Routes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 
 class StudentSignup extends GetWidget<StudentViewController> {
-  final SizedBox emptySpace = SizedBox(height: 15.0);
+  static const SizedBox emptySpace = SizedBox(height: 15.0);
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -80,7 +82,7 @@ class StudentSignup extends GetWidget<StudentViewController> {
                 MaterialButton(
                   minWidth: double.infinity,
                   color: Colors.yellow[900],
-                  onPressed: () => controller.signUP(),
+                  onPressed: () => _signUp(),
                   child: Text("SIGNUP"),
                 ),
                 emptySpace,
@@ -90,7 +92,7 @@ class StudentSignup extends GetWidget<StudentViewController> {
                     Text("Already Have An Account ?"),
                     TextButton(
                       onPressed: () {
-                        Get.off(() => StudentLogin());
+                        Get.offNamed(Routes.STUDENT_SIGN_UP);
                       },
                       child: Text("LOGIN"),
                     ),
@@ -116,14 +118,14 @@ class StudentSignup extends GetWidget<StudentViewController> {
               TextButtonWidget(
                 buttonText: "Camera",
                 onclick: () {
-                  controller.pickImage(imageSource: ImageSource.camera);
+                  pickImage(imageSource: ImageSource.camera);
                 },
               ),
               Divider(thickness: 1, color: Colors.grey),
               TextButtonWidget(
                 buttonText: "Gallery",
                 onclick: () {
-                  controller.pickImage(imageSource: ImageSource.gallery);
+                  pickImage(imageSource: ImageSource.gallery);
                 },
               ),
             ],
@@ -131,5 +133,27 @@ class StudentSignup extends GetWidget<StudentViewController> {
         );
       },
     );
+  }
+
+  //Todo ================== Pick Image =====================##
+  Future<void> pickImage({@required ImageSource imageSource}) async {
+    XFile _response = await ImagePicker().pickImage(source: imageSource);
+    if (_response != null) {
+      controller.file.value = _response.path;
+      controller.imageFile = File(controller.file.value);
+
+      Get.back();
+    } else {
+      return;
+    }
+  }
+
+  void _signUp() {
+    if (controller.imageFile == null) {
+      Get.back();
+      return errorDialogBox(description: FILE_IMAGE_ERROR_MESSAGE);
+    } else {
+      controller.signUP();
+    }
   }
 }

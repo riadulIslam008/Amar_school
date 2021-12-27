@@ -59,7 +59,7 @@ class StudentLogin extends GetWidget<StudentViewController> {
                       Text("Don't Have An Account ?"),
                       TextButton(
                         onPressed: () {
-                          Get.toNamed(Routes.StudentSignin);
+                          Get.toNamed(Routes.STUDENT_SIGN_UP);
                         },
                         child: Text("SIGNUP"),
                       ),

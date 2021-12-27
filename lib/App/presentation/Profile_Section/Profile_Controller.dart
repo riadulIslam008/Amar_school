@@ -1,7 +1,7 @@
-import 'package:amer_school/App/presentation/Auth_Section/AuthPage.dart';
 import 'package:amer_school/App/presentation/Group_Chat_Screen/GroupChatScreenController.dart';
 import 'package:amer_school/App/presentation/Home_Section/HomeViewPageController.dart';
 import 'package:amer_school/App/presentation/Upload_FIle_Section/UploadFileController.dart';
+import 'package:amer_school/App/rotues/App_Pages.dart';
 import 'package:get/get.dart';
 
 class ProfileController extends GetxController {
@@ -18,6 +18,6 @@ class ProfileController extends GetxController {
     Get.delete<HomeViewController>(force: true);
     Get.delete<GroupChatScreenController>(force: true);
     Get.delete<UploadFileController>(force: true);
-    Get.offAll(() => AuthPage());
+    Get.offAllNamed(AppPages.INTIAL_ROUTE);
   }
 }

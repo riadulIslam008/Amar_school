@@ -1,3 +1,4 @@
+import 'package:amer_school/App/presentation/DropDown_Section/DropDown_Controller.dart';
 import 'package:amer_school/App/presentation/Group_List_Section/GroupListViewController.dart';
 import 'package:amer_school/App/presentation/Group_List_Section/Widgets/Create_Group_Dialog.dart';
 import 'package:flutter/material.dart';
@@ -32,10 +33,10 @@ class BottomButton extends GetWidget<GroupListViewController> {
   }
 
   void _onPressed() {
-    if (controller.studentSection != null) {
-      controller.createGroup(className: controller.studentSection);
-      
-    }
+    final studentSection =
+        Get.find<DropDownController>().fristItemClassListVariable;
+
+    controller.createGroup(className: studentSection);
     Get.back();
   }
 }
