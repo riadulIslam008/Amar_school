@@ -18,6 +18,16 @@ samples, guidance on mobile development, and a full API reference.
 
 <h2> App details </h2>
 This is 12 Page application.There are Two section , one for Teacher one for Students.For backend it uses Firebase. Students need Sign Up in app Before login.For Signup every info is required for App.But Teachers can continue with simple login.Inside app their was already made some group for Student.Student will Automatic add group according to Standerd.
+
+<h1> *Some App Ui* </h1>
+<p  align="left">
+   <img src="https://user-images.githubusercontent.com/73518920/149098397-4b7c57ab-c077-4347-a612-eb1ddde91bfd.png" height= "500" width ="300">
+   <img src="https://user-images.githubusercontent.com/73518920/149098409-b83b4f76-b020-455b-a6fd-e90063082582.jpg" height= "500" width ="300">
+   <img src="https://user-images.githubusercontent.com/73518920/149098419-b68de026-2f7a-4e37-8661-7b14c87e67b6.jpg" height= "500" width ="300">
+  
+  </p>
+
+
 <h1> *Core Feature* </h1>
 <h5>1. Teachers are able to broadcast Live lectures.While broadcast Live lectures teacher can see how many students and which student watch this live.</h5>
 <h5>2. Teacher can upload their live lectures init Firebase </h5>
