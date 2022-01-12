@@ -23,6 +23,11 @@ This is 12 Page application.There are Two section , one for Teacher one for Stud
 <p  align="left">
    <img src="https://user-images.githubusercontent.com/73518920/149098397-4b7c57ab-c077-4347-a612-eb1ddde91bfd.png" height= "500" width ="300">
    <img src="https://user-images.githubusercontent.com/73518920/149098409-b83b4f76-b020-455b-a6fd-e90063082582.jpg" height= "500" width ="300">
+   <img src="https://user-images.githubusercontent.com/73518920/149098425-c7b58782-24e6-4b23-8ca3-048c68814a75.jpg" height= "500" width ="300">
+  
+  </p>
+  <h1> *Group and live Class* </h1>
+<p  align="left">
    <img src="https://user-images.githubusercontent.com/73518920/149098419-b68de026-2f7a-4e37-8661-7b14c87e67b6.jpg" height= "500" width ="300">
   
   </p>
