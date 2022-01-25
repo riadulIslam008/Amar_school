@@ -53,6 +53,10 @@ class HomeViewController extends GetxController {
 
   RxString personProfile = "".obs;
 
+  // Rx<GroupCallTeacherModelEntity> _checkCallInstance =
+  //     Rxn<GroupCallTeacherModelEntity>();
+  // GroupCallTeacherModelEntity get checkCallInstance => _checkCallInstance.value;
+
   @override
   void onInit() {
     IsolateNameServer.registerPortWithName(
@@ -60,8 +64,17 @@ class HomeViewController extends GetxController {
     FlutterDownloader.registerCallback(downloaderCallback);
     _receivePort.listen((message) {});
     initialFunction();
+    //  _checkCallInstance.bindStream(checkTeacherGroupCall());
     super.onInit();
   }
+
+  // @override
+  // void onReady() {
+  //   if(checkCallInstance != null)  receiverSnackBar(checkCallInstance);
+  //   // Get.snackbar(
+  //   //     "hi", "Hello");
+  //   super.onReady();
+  // }
 
   void initialFunction() {
     final person = _getStorage.read(PERSON_TYPES);
@@ -136,8 +149,8 @@ class HomeViewController extends GetxController {
     return _checkGroupCall(standerd: section);
   }
 
-  void groupCallPage(teacherName){
-     final section = _getStorage.read(STUDENT_SECTION);
-     Get.toNamed(Routes.GROUP_CALL, arguments: [teacherName, section, false]);
+  void groupCallPage(teacherName) {
+    final section = _getStorage.read(STUDENT_SECTION);
+    Get.toNamed(Routes.GROUP_CALL, arguments: [teacherName, section, false]);
   }
 }

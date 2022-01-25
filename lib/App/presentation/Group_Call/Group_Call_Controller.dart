@@ -7,7 +7,7 @@ class GroupCallController extends GetxController {
 
   GroupCallController(this._firebaseService);
 
-  void deleteGroupCallStream(studentClass) async {
+   void deleteGroupCallStream(studentClass) async {
     DeleteGroupCallInstance _deleteGroupCall =
         DeleteGroupCallInstance(_firebaseService);
 

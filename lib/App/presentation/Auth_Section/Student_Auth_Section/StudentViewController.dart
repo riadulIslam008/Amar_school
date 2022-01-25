@@ -67,19 +67,21 @@ class StudentViewController extends GetxController {
 
   RxString standerd = "".obs;
 
+  
+//?? ===========  SignIn ======================//
   void signIN() async {
     Get.to(() => CircularPage(), transition: Transition.zoom);
     final String studentSection = _studentSectionReturn();
     final String email = makeValidateEmail(fullNameController.text,
-        rollController.text,  studentSection.replaceAll(" ", "").toLowerCase());
+        rollController.text, studentSection.replaceAll(" ", "").toLowerCase());
 
     FirebaseSignIn firebasesignin = FirebaseSignIn(_firebaseServices);
     final Either<AppError, String> _credentail =
         await firebasesignin(AuthParam(email, passwordController.text));
 
     _credentail.fold((l) {
-      Get.back();
       errorDialogBox(description: l.errorMerrsage);
+      Get.offNamed(Routes.StudentLogin);
     }, (r) {
       _getStorage.write(STUDENT_UID, "$r");
       _getStorage.write(PERSON_TYPES, STUDENT);
@@ -88,11 +90,11 @@ class StudentViewController extends GetxController {
 
       _getStorage.write(STUDENT_SECTION, studentSection);
 
-      Get.offAndToNamed(Routes.HomeView, arguments: [false]);
+      Get.offAllNamed(Routes.HomeView, arguments: [false]);
     });
   }
 
-//Todo ===========  SignUp ======================//
+//?? ===========  SignUp ======================//
   signUP() async {
     final String studentSection = _studentSectionReturn();
 
@@ -106,8 +108,11 @@ class StudentViewController extends GetxController {
 
     final Either<AppError, String> _credential =
         await _signupFirebase(email: email);
-    _credential.fold((l) => errorDialogBox(description: l.errorMerrsage),
-        (userUid) async {
+
+    _credential.fold((l) {
+      errorDialogBox(description: l.errorMerrsage);
+      Get.offNamed(Routes.STUDENT_SIGN_UP);
+    }, (userUid) async {
       final Either<AppError, String> imageUrl =
           await _uploadImage(destination: destination);
       imageUrl.fold((l) => errorDialogBox(description: IMAGE_ERROR_MESSAGE),
@@ -123,8 +128,10 @@ class StudentViewController extends GetxController {
         final Either<AppError, void> _either =
             await _saveStudentDataInFirebase(studentModelEntity: studentInfos);
 
-        _either.fold((l) => errorDialogBox(description: l.errorMerrsage),
-            (r) async {
+        _either.fold((l) {
+          errorDialogBox(description: l.errorMerrsage);
+          Get.offNamed(Routes.STUDENT_SIGN_UP);
+        }, (r) async {
           MembersModelEntity _membersModel = MembersModelEntity(
             name: fullNameController.text,
             roll: int.parse(rollController.text),
@@ -134,8 +141,10 @@ class StudentViewController extends GetxController {
           final _addedInGroup =
               await _addStudentInTheirGroup(membersModelEntity: _membersModel);
 
-          _addedInGroup
-              .fold((l) => errorDialogBox(description: l.errorMerrsage), (r) {
+          _addedInGroup.fold((l) {
+            errorDialogBox(description: l.errorMerrsage);
+            Get.offNamed(Routes.STUDENT_SIGN_UP);
+          }, (r) {
             clearController();
             Get.off(() => StudentLogin());
             successfulSnackBar("Sign UP Completed", "Please login here");

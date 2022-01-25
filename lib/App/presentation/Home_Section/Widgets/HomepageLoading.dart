@@ -16,7 +16,7 @@ class HomePageLoadingView extends GetWidget<HomeViewController> {
   Widget build(BuildContext context) {
     final _width = Get.width;
     final TextStyle _style = TextStyle(
-      fontSize: 17,
+      fontSize: 15,
       fontWeight: FontWeight.bold,
     );
     return Container(
@@ -88,6 +88,8 @@ class HomePageLoadingView extends GetWidget<HomeViewController> {
                     height: 30,
                     child: Text(
                       "Tilte: ${videoFileModel.videoTitle.capitalizeFirst}",
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: _style,
                     ),
                   ),
@@ -96,6 +98,8 @@ class HomePageLoadingView extends GetWidget<HomeViewController> {
                     height: 30,
                     child: Text(
                       "Des: ${videoFileModel.videoDescription.capitalizeFirst}",
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: _style,
                     ),
                   ),
@@ -112,8 +116,7 @@ class HomePageLoadingView extends GetWidget<HomeViewController> {
 //Todo ─── PLAYVIDEO ──────────────────────────────────────────────────────────────────
 //
   void playButton() {
-     controller.videoPlay(videoLink: videoFileModel.videoFileLink);
-  
+    controller.videoPlay(videoLink: videoFileModel.videoFileLink);
   }
 
 //

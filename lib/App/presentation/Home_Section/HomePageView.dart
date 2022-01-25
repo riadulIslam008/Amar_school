@@ -12,10 +12,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:permission_handler_platform_interface/permission_handler_platform_interface.dart';
 
+
 // ignore: must_be_immutable
 class HomePageView extends GetWidget<HomeViewController> {
-  final bool isTeacher;
   HomePageView(this.isTeacher, {Key key}) : super(key: key);
+  final bool isTeacher;
 
   bool cutCall = false;
 
@@ -65,29 +66,28 @@ class HomePageView extends GetWidget<HomeViewController> {
       //Todo ─── BODY ────────────────────────────────────────────────────────
       //
       body: StreamBuilder<GroupCallTeacherModelEntity>(
-        stream: controller.checkTeacherGroupCall(),
-        builder: (context, snapshot) {
-          if (snapshot.hasData &&
-              snapshot.data.teacherName != null &&
-              cutCall == false) {
-            WidgetsBinding.instance
-                .addPostFrameCallback((_) => _snackBarFumction(snapshot.data));
-          }
+          stream: controller.checkTeacherGroupCall(),
+          builder: (context, snapshot) {
+            if (snapshot.hasData &&
+                snapshot.data.teacherName != null &&
+                cutCall == false) {
+              WidgetsBinding.instance.addPostFrameCallback(
+                  (_) => _snackBarFumction(snapshot.data));
+            }
 
-          return StreamBuilder(
-            stream: controller.fetchVideoCollection(),
-            builder: (context, snapshot) {
-              if (snapshot.hasError)
-                errorDialogBox(description: INTERNET_ERROR_MESSAGE);
-              return (snapshot.hasData)
-                  ? _body(snapshot.data)
-                  : Center(
-                      child: CircularProgressIndicator(),
-                    );
-            },
-          );
-        },
-      ),
+            return StreamBuilder(
+              stream: controller.fetchVideoCollection(),
+              builder: (context, snapshot) {
+                if (snapshot.hasError)
+                  errorDialogBox(description: INTERNET_ERROR_MESSAGE);
+                return (snapshot.hasData)
+                    ? _body(snapshot.data)
+                    : Center(
+                        child: CircularProgressIndicator(),
+                      );
+              },
+            );
+          }),
       //
       //Todo ─── FLOATING BUTTON ────────────────────────────────────────────────────────────
       //

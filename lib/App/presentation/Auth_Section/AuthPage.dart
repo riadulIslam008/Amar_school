@@ -7,9 +7,9 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
 class AuthPage extends StatelessWidget {
-    final GetStorage getStorage = GetStorage();
+  final GetStorage getStorage = GetStorage();
   @override
-  Widget build(BuildContext context)  {
+  Widget build(BuildContext context) {
     return getStorage.read(TEACHER_UID) != null
         ? HomePageView(true)
         : getStorage.read(STUDENT_UID) != null
@@ -21,8 +21,9 @@ class AuthPage extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       ButtonWidget(
-                          buttonText: "TEACHER",
-                          onclick: () => Get.toNamed(Routes.TeacherLogin)),
+                        buttonText: "TEACHER",
+                        onclick: () => Get.toNamed(Routes.TeacherLogin),
+                      ),
                       SizedBox(height: 20),
                       ButtonWidget(
                         buttonText: "STUDENT",
