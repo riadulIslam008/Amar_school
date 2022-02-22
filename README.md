@@ -13,4 +13,5 @@
 
 
 <h4>Teacher UI </h4>
-<img src="https://user-images.githubusercontent.com/73518920/155087711-cd69148b-0e28-4714-9974-ff0ff585259b.png"  width="100%" >
+<img src="https://user-images.githubusercontent.com/73518920/155094085-11ebb115-03c4-4447-a260-4c9b2281ac9d.png"  width="100%" >
+<img src="https://user-images.githubusercontent.com/73518920/155094481-a0d4e18d-f46b-4c37-a04c-ae4c65bbac38.png"  width="100%" >
