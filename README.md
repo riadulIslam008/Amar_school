@@ -18,4 +18,4 @@
 
 <h4>Student UI(user name-- demo rafi, Roll-1, select your class- Class 10, password-123456) </h4>
 <img src="https://user-images.githubusercontent.com/73518920/161602656-34e89f6d-4590-49ce-a468-8063589fcece.png"  width="100%" >
-<img src="https://user-images.githubusercontent.com/73518920/155094481-a0d4e18d-f46b-4c37-a04c-ae4c65bbac38.png"  width="100%" >
+<img src="https://user-images.githubusercontent.com/73518920/161606816-8710d5ef-b3a1-411a-aa3f-4aecb06da71d.png"  width="100%" >
