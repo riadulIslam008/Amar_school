@@ -177,7 +177,7 @@ my_project/
 │   │       └── CircularPage.dart
 
 ---
-
+##📦 Dependencies
 dependencies:
   agora_rtc_engine: ^4.0.6
   cached_network_image: ^3.1.0+1
