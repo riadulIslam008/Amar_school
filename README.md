@@ -194,9 +194,11 @@ my_project/
 │   │   └── widgets/
 │   │       └── CircularPage.dart
 
----
----
+```
+
 ### 📦 Dependencies
+
+```
 dependencies:
   agora_rtc_engine: ^4.0.6
   cached_network_image: ^3.1.0+1
@@ -221,4 +223,4 @@ dependencies:
   shimmer: ^2.0.0
   url_launcher: ^6.0.15
   video_player: ^2.2.7
----
+```
