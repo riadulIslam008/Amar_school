@@ -49,21 +49,38 @@ Amer School App is a Flutter-based school communication and virtual classroom pl
 
 ---
 
+---
+
+## 🛠️ Tech Stack
+
+- **Framework:** Flutter
+- **Backend & Storage:** Firebase
+- **Real-time Video:** Agora RTC
+- **Messaging & Notifications:** Firebase Cloud Messaging (FCM)
+
+---
+
 ## 🖼️ Screenshots
 
 |   |   |
 |---|---|
-| ![Screenshot 1](https://raw.githubusercontent.com/riadulIslam008/Amer-School-Images/refs/heads/main/image-1.webp) | ![Screenshot 2](https://raw.githubusercontent.com/riadulIslam008/Amer-School-Images/refs/heads/main/image-2.webp) |
-| ![Screenshot 3](https://raw.githubusercontent.com/riadulIslam008/Amer-School-Images/refs/heads/main/image-3.webp) | ![Screenshot 4](https://raw.githubusercontent.com/riadulIslam008/Amer-School-Images/refs/heads/main/image-4.webp) |
-| ![Screenshot 5](https://raw.githubusercontent.com/riadulIslam008/Amer-School-Images/refs/heads/main/image-5.webp) | ![Screenshot 6](https://raw.githubusercontent.com/riadulIslam008/Amer-School-Images/refs/heads/main/image-6.webp) |
-| ![Screenshot 7](https://raw.githubusercontent.com/riadulIslam008/Amer-School-Images/refs/heads/main/image-7.webp) | ![Screenshot 8](https://raw.githubusercontent.com/riadulIslam008/Amer-School-Images/refs/heads/main/image-8.webp) |
-| ![Screenshot 9](https://raw.githubusercontent.com/riadulIslam008/Amer-School-Images/refs/heads/main/image-9.webp) | ![Screenshot 10](https://raw.githubusercontent.com/riadulIslam008/Amer-School-Images/refs/heads/main/image-10.webp) |
+<p align="center">
+  <img src="https://raw.githubusercontent.com/riadulIslam008/Amer-School-Images/refs/heads/main/image-1.webp" height="300">
+  <img src="https://raw.githubusercontent.com/riadulIslam008/Amer-School-Images/refs/heads/main/image-2.webp" height="300">
+  <img src="https://raw.githubusercontent.com/riadulIslam008/Amer-School-Images/refs/heads/main/image-3.webp" height="300">
+  <img src="https://raw.githubusercontent.com/riadulIslam008/Amer-School-Images/refs/heads/main/image-4.webp" height="300">
+  <img src="https://raw.githubusercontent.com/riadulIslam008/Amer-School-Images/refs/heads/main/image-5.webp" height="300">
+  <img src="https://raw.githubusercontent.com/riadulIslam008/Amer-School-Images/refs/heads/main/image-6.webp" height="300">
+  <img src="https://raw.githubusercontent.com/riadulIslam008/Amer-School-Images/refs/heads/main/image-7.webp" height="300">
+  <img src="https://raw.githubusercontent.com/riadulIslam008/Amer-School-Images/refs/heads/main/image-8.webp" height="300">
+  <img src="https://raw.githubusercontent.com/riadulIslam008/Amer-School-Images/refs/heads/main/image-9.webp" height="300">
+  <img src="https://raw.githubusercontent.com/riadulIslam008/Amer-School-Images/refs/heads/main/image-10.webp" height="300">
+</p>
+
 
 ---
 
 ## 📂 Folder Structure
-
-```plaintext
 
 ---
 my_project/
@@ -177,7 +194,8 @@ my_project/
 │   │       └── CircularPage.dart
 
 ---
-##📦 Dependencies
+---
+### 📦 Dependencies
 dependencies:
   agora_rtc_engine: ^4.0.6
   cached_network_image: ^3.1.0+1
@@ -202,4 +220,4 @@ dependencies:
   shimmer: ^2.0.0
   url_launcher: ^6.0.15
   video_player: ^2.2.7
-
+---
