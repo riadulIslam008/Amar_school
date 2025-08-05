@@ -82,6 +82,7 @@ Amer School App is a Flutter-based school communication and virtual classroom pl
 
 ## 📂 Folder Structure
 
+```plain Text
 ---
 my_project/
 ├── lib/
